@@ -55,11 +55,20 @@ namespace osu.Game.Rulesets.Mania.Difficulty
             };
         }
 
+        private double hard_hit_multiplier = 1.5;
+        private double easy_hit_multiplier = 0.9;
         private double computeDifficultyValue(ManiaDifficultyAttributes attributes)
         {
-            double difficultyValue = 8.0 * Math.Pow(Math.Max(attributes.StarRating - 0.15, 0.05), 2.2) // Star rating to pp curve
-                                         * Math.Max(0, 5 * scoreAccuracy - 4) // From 80% accuracy, 1/20th of total pp is awarded per additional 1% accuracy
-                                         * (1 + 0.1 * Math.Min(1, totalHits / 1500)); // Length bonus, capped at 1500 notes
+            double difficultyValue = 8.0 * Math.Pow(Math.Max(attributes.StarRating - 0.15, 0.05), 2.2); // Star rating to pp curve
+
+            HardHitMuliplier = hard_hit_multiplier;
+            EasyHitMuliplier = easy_hit_multiplier;
+
+            CalculateBaseLengthBonus(difficultyValue, attributes.StrainFactor, totalHits);
+
+            double lengthBonus = EasyLengthBonus + HardLengthBonus;
+
+            difficultyValue += lengthBonus;
 
             return difficultyValue;
         }

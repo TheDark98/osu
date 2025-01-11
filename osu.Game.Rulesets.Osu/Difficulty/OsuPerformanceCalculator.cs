@@ -140,8 +140,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             };
         }
 
-        private double hard_hit_muliplier = 1.5; //multiplier to balance spikes weigth
-        private double easy_hit_muliplier = 1.1; //multiplier to balance filler weigth
+        private const double hard_hit_multiplier = 1.5; //multiplier to balance spikes weigth
+        private const double easy_hit_multiplier = 1.1; //multiplier to balance filler weigth
 
         private double computeAimValue(ScoreInfo score, OsuDifficultyAttributes attributes)
         {
@@ -180,8 +180,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             else if (attributes.ApproachRate < 8.0)
                 approachRateFactor = 0.05 * (8.0 - attributes.ApproachRate);
 
-            HardHitMuliplier = hard_hit_muliplier;
-            EasyHitMuliplier = easy_hit_muliplier;
+            HardHitMuliplier = hard_hit_multiplier;
+            EasyHitMuliplier = easy_hit_multiplier;
 
             CalculateBaseLengthBonus(aimValue, attributes.AimDifficultyFactor, totalHits);
 
@@ -228,8 +228,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             if (attributes.ApproachRate > 10.33)
                 approachRateFactor = 0.3 * (attributes.ApproachRate - 10.33);
 
-            HardHitMuliplier = hard_hit_muliplier;
-            EasyHitMuliplier = easy_hit_muliplier;
+            HardHitMuliplier = hard_hit_multiplier;
+            EasyHitMuliplier = easy_hit_multiplier;
 
             CalculateBaseLengthBonus(speedValue, attributes.SpeedDifficultyFactor, totalHits);
 

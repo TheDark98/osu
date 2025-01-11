@@ -1,6 +1,7 @@
 ﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using osu.Game.Beatmaps;
@@ -16,8 +17,8 @@ namespace osu.Game.Rulesets.Difficulty
         protected double EasyHitMuliplier; //multiplier to balance filler weigth
 
 
-        protected double HardLengthBonus; //multiplier to balance filler weigth
-        protected double EasyLengthBonus; //multiplier to balance filler weigth
+        protected double HardLengthBonus; //Bonus PP for hard hits
+        protected double EasyLengthBonus; //Bonus PP for easy hits
 
         protected PerformanceCalculator(Ruleset ruleset)
         {

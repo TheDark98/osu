@@ -55,8 +55,8 @@ namespace osu.Game.Rulesets.Mania.Difficulty
             };
         }
 
-        private double hard_hit_multiplier = 1.5;
-        private double easy_hit_multiplier = 0.9;
+        private double hard_hit_multiplier = 1.0;
+        private double easy_hit_multiplier = 0.5;
         private double computeDifficultyValue(ManiaDifficultyAttributes attributes)
         {
             double difficultyValue = 8.0 * Math.Pow(Math.Max(attributes.StarRating - 0.15, 0.05), 2.2); // Star rating to pp curve
@@ -67,13 +67,14 @@ namespace osu.Game.Rulesets.Mania.Difficulty
             CalculateBaseLengthBonus(difficultyValue, attributes.StrainFactor, totalHits);
 
             double lengthBonus = EasyLengthBonus + HardLengthBonus;
+            lengthBonus /= 2;
 
             difficultyValue += lengthBonus;
 
-            return difficultyValue;
+            return difficultyValue * Math.Max(0, 5 * scoreAccuracy - 4);
         }
 
-        private double totalHits => countPerfect + countOk + countGreat + countGood + countMeh + countMiss;
+        private int totalHits => countPerfect + countOk + countGreat + countGood + countMeh + countMiss;
 
         /// <summary>
         /// Accuracy used to weight judgements independently from the score's actual accuracy.
@@ -83,7 +84,10 @@ namespace osu.Game.Rulesets.Mania.Difficulty
             if (totalHits == 0)
                 return 0;
 
-            return (countPerfect * 320 + countGreat * 300 + countGood * 200 + countOk * 100 + countMeh * 50) / (totalHits * 320);
+            double summedHits = countPerfect * 320 + countGreat * 300 + countGood * 200 + countOk * 100 + countMeh * 50;
+            summedHits /= totalHits * 320;
+
+            return summedHits;
         }
     }
 }

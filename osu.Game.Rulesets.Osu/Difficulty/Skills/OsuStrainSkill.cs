@@ -23,12 +23,6 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
         /// </summary>
         protected virtual double ReducedStrainBaseline => 0.75;
 
-        private double maxDifficulty; //Max difficulty of a single object
-
-        private double summedDifficulty; //Summed difficulty of a single object
-
-        private double addedStrain; //Summed difficulty of a single object
-
         protected OsuStrainSkill(Mod[] mods)
             : base(mods)
         {
@@ -45,11 +39,11 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
 
             List<double> strains = peaks.OrderDescending().ToList();
 
-            addedStrain = strains.Count;
+            AddedStrain = strains.Count;
 
             foreach (double strain in strains.OrderDescending())
             {
-                addStrain(strain);
+                AddStrain(strain);
             }
 
             // We are reducing the highest strains first to account for extreme difficulty spikes
@@ -69,16 +63,6 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
 
             return difficulty;
         }
-
-        private void addStrain(double currentStrain)
-        {
-            summedDifficulty += currentStrain;
-
-            if (maxDifficulty < currentStrain)
-                maxDifficulty = currentStrain;
-        }
-
-        public override double DifficultyFactor() => summedDifficulty / addedStrain / maxDifficulty;
         public static double DifficultyToPerformance(double difficulty) => Math.Pow(5.0 * Math.Max(1.0, difficulty / 0.0675) - 4.0, 3.0) / 100000.0;
     }
 }

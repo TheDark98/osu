@@ -28,6 +28,12 @@ namespace osu.Game.Rulesets.Difficulty.Skills
         private double currentSectionPeak; // We also keep track of the peak strain level in the current section.
         private double currentSectionEnd;
 
+        private double maxDifficulty; //Max difficulty of a single object
+
+        private double summedDifficulty; //Summed difficulty of a single object
+
+        protected double AddedStrain; //Summed difficulty of a single object
+
         private readonly List<double> strainPeaks = new List<double>();
         protected readonly List<double> ObjectStrains = new List<double>(); // Store individual strains
 
@@ -138,6 +144,14 @@ namespace osu.Game.Rulesets.Difficulty.Skills
 
             return difficulty;
         }
-        public override double DifficultyFactor() => 0;
+
+        protected void AddStrain(double currentStrain)
+        {
+            summedDifficulty += currentStrain;
+
+            if (maxDifficulty < currentStrain)
+                maxDifficulty = currentStrain;
+        }
+        public override double DifficultyFactor() => summedDifficulty / AddedStrain / maxDifficulty;
     }
 }

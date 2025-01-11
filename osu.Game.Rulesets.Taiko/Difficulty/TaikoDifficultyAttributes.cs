@@ -17,7 +17,7 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
         public double RhythmDifficulty { get; set; }
 
         /// <summary>
-        /// The difficulty corresponding to the rhythm skill.
+        /// The factor corresponding to the rhythm skill.
         /// </summary>
         [JsonProperty("rhythm_difficulty_factor")]
         public double RhythmDifficultyFactor { get; set; }
@@ -27,6 +27,12 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
         /// </summary>
         [JsonProperty("reading_difficulty")]
         public double ReadingDifficulty { get; set; }
+
+        /// <summary>
+        /// The factor corresponding to the reading skill.
+        /// </summary>
+        [JsonProperty("reading_difficulty_factor")]
+        public double ReadingDifficultyFactor { get; set; }
 
         /// <summary>
         /// The difficulty corresponding to the colour skill.
@@ -41,7 +47,7 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
         public double StaminaDifficulty { get; set; }
 
         /// <summary>
-        /// The difficulty corresponding to the stamina skill.
+        /// The factor corresponding to the stamina skill.
         /// </summary>
         [JsonProperty("stamina_difficulty_factor")]
         public double StaminaDifficultyFactor { get; set; }

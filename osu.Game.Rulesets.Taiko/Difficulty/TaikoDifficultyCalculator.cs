@@ -117,6 +117,7 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
 
             double rhythmDifficultyFactor = rhythm.DifficultyFactor();
             double staminaDifficultyFactor = stamina.DifficultyFactor();
+            double readingDifficultyFactor = reading.DifficultyFactor();
 
             double colourDifficultStrains = colour.CountTopWeightedStrains();
             double readingDifficultStrains = reading.CountTopWeightedStrains();
@@ -145,6 +146,7 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
                 RhythmDifficulty = rhythmRating,
                 RhythmDifficultyFactor = rhythmDifficultyFactor,
                 ReadingDifficulty = readingRating,
+                ReadingDifficultyFactor = readingDifficultyFactor,
                 ColourDifficulty = colourRating,
                 StaminaDifficulty = staminaRating,
                 StaminaDifficultyFactor = staminaDifficultyFactor,

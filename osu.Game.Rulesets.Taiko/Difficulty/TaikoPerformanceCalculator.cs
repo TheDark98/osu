@@ -71,19 +71,28 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
             };
         }
 
-        //private const double bonus_length_stamina_multiplier = 0.142857143;
-        private const double bonus_length_stamina_multiplier = 0.125;
-        private const double bonus_length_rhythm_multiplier = 0.5;
+        private const double hard_hit_muliplier = 1.5; //multiplier to balance spike weigth
+        private const double easy_hit_muliplier = 1.1; //multiplier to balance filler weigth
 
         private double computeDifficultyValue(ScoreInfo score, TaikoDifficultyAttributes attributes)
         {
             double baseDifficulty = 5 * Math.Max(1.0, attributes.StarRating / 0.115) - 4.0;
             double difficultyValue = Math.Min(Math.Pow(baseDifficulty, 3) / 69052.51, Math.Pow(baseDifficulty, 2.25) / 1150.0);
 
-            double staminaFactor = attributes.StaminaDifficultyFactor;
+            double hardHits = totalHits * attributes.StaminaDifficultyFactor;
 
-            double lengthBonus = 1 + staminaFactor * bonus_length_stamina_multiplier * Math.Min(1.0, totalHits / 1500.0);
-            difficultyValue *= lengthBonus;
+            double easyHits = totalHits - hardHits;
+
+            double hardLengthBonus = difficultyValue * 0.0001 * hard_hit_muliplier * hardHits; //Length bonus for hard hit with difficultyValue * offset
+
+            double easyLengthBonus = difficultyValue * 0.0001 * easy_hit_muliplier * easyHits; //Length bonus for easy hit with difficultyValue * offset
+
+            double lengthBonus = hardLengthBonus + easyLengthBonus; //Total length bonus
+
+            if (score.Mods.Any(m => m is ModFlashlight<TaikoHitObject>))
+                lengthBonus *= Math.Max(1, 1.050 - Math.Min(attributes.MonoStaminaFactor / 50, 1));
+
+            difficultyValue += lengthBonus;
 
             difficultyValue *= Math.Pow(0.986, effectiveMissCount);
 
@@ -92,9 +101,6 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
 
             if (score.Mods.Any(m => m is ModHidden))
                 difficultyValue *= 1.025;
-
-            if (score.Mods.Any(m => m is ModFlashlight<TaikoHitObject>))
-                difficultyValue *= Math.Max(1, 1.050 - Math.Min(attributes.MonoStaminaFactor / 50, 1) * lengthBonus);
 
             if (estimatedUnstableRate == null)
                 return 0;
@@ -111,15 +117,23 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
             if (attributes.GreatHitWindow <= 0 || estimatedUnstableRate == null)
                 return 0;
 
-            double rhythmFactor = attributes.RhythmDifficultyFactor;
-
             double accuracyValue = Math.Pow(70 / estimatedUnstableRate.Value, 1.1) * Math.Pow(attributes.StarRating, 0.4) * 100.0;
 
-            double lengthBonus = Math.Min(1.15, Math.Pow(totalHits / 1500.0, rhythmFactor * bonus_length_rhythm_multiplier));
+            double hardHits = totalHits * attributes.RhythmDifficultyFactor;
+
+            double easyHits = totalHits - hardHits;
+
+            double hardLengthBonus = accuracyValue * 0.0001 * hard_hit_muliplier * hardHits; //Length bonus for hard hit with accuracyValue * offset
+
+            double easyLengthBonus = accuracyValue * 0.0001 * easy_hit_muliplier * easyHits; //Length bonus for easy hit with accuracyValue * offset
+
+            double lengthBonus = hardLengthBonus + easyLengthBonus; //Total length bonus
 
             // Slight HDFL Bonus for accuracy. A clamp is used to prevent against negative values.
             if (score.Mods.Any(m => m is ModFlashlight<TaikoHitObject>) && score.Mods.Any(m => m is ModHidden) && !isConvert)
-                accuracyValue *= Math.Max(1.0, 1.05 * lengthBonus);
+                lengthBonus *= Math.Max(1.0, 1.05);
+
+            accuracyValue += lengthBonus;
 
             return accuracyValue;
         }

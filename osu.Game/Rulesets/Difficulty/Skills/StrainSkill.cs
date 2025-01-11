@@ -138,5 +138,6 @@ namespace osu.Game.Rulesets.Difficulty.Skills
 
             return difficulty;
         }
+        public override double DifficultyFactor() => 0;
     }
 }

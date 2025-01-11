@@ -151,7 +151,6 @@ namespace osu.Game.Rulesets.Difficulty.Skills
 
             if (maxDifficulty < currentStrain)
                 maxDifficulty = currentStrain;
-            AddedStrain++;
         }
         public override double DifficultyFactor() => summedDifficulty / AddedStrain / maxDifficulty;
     }

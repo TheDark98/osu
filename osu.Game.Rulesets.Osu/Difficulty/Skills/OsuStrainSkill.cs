@@ -39,6 +39,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
 
             List<double> strains = peaks.OrderDescending().ToList();
 
+            AddedStrain = strains.Count;
+
             foreach (double strain in strains.OrderDescending())
             {
                 AddStrain(strain);

@@ -12,8 +12,8 @@ namespace osu.Game.Rulesets.Difficulty
     {
         protected readonly Ruleset Ruleset;
 
-        private double hard_hit_muliplier; //multiplier to balance spike weigth
-        private double easy_hit_muliplier; //multiplier to balance filler weigth
+        private double hardHitMuliplier; //multiplier to balance spike weigth
+        private double easyHitMuliplier; //multiplier to balance filler weigth
 
         protected PerformanceCalculator(Ruleset ruleset)
         {
@@ -41,15 +41,15 @@ namespace osu.Game.Rulesets.Difficulty
             double hardHits = totalHits * difficultyFactor;
             double easyHits = totalHits - hardHits;
 
-            double hardLengthBonus = basePP * 0.0001 * hard_hit_muliplier * hardHits; //Length bonus for hard hit with basePP * offset
-            double easyLengthBonus = basePP * 0.0001 * easy_hit_muliplier * easyHits; //Length bonus for easy hit with basePP * offset
+            double hardLengthBonus = basePP * 0.0001 * hardHitMuliplier * hardHits; //Length bonus for hard hit with basePP * offset
+            double easyLengthBonus = basePP * 0.0001 * easyHitMuliplier * easyHits; //Length bonus for easy hit with basePP * offset
             return hardLengthBonus + easyLengthBonus;
         }
 
-        protected void SetHitMultipliers(double hard_hit_muliplier, double easy_hit_muliplier)
+        protected void SetHitMultipliers(double hardHitMuliplier, double easyHitMuliplier)
         {
-            this.hard_hit_muliplier = hard_hit_muliplier;
-            this.easy_hit_muliplier = easy_hit_muliplier;
+            this.hardHitMuliplier = hardHitMuliplier;
+            this.easyHitMuliplier = easyHitMuliplier;
         }
     }
 }

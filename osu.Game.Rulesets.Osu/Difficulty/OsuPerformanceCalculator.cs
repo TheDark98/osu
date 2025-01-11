@@ -140,7 +140,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             };
         }
 
-        private const double hard_hit_muliplier = 1.5; //multiplier to balance spike weigth
+        private const double hard_hit_muliplier = 1.5; //multiplier to balance spikes weigth
         private const double easy_hit_muliplier = 1.1; //multiplier to balance filler weigth
 
         private double computeAimValue(ScoreInfo score, OsuDifficultyAttributes attributes)
@@ -173,10 +173,6 @@ namespace osu.Game.Rulesets.Osu.Difficulty
 
             double aimValue = OsuStrainSkill.DifficultyToPerformance(aimDifficulty);
 
-            double hardHits = totalHits * attributes.AimDifficultyFactor;
-
-            double easyHits = totalHits - hardHits;
-
             double approachRateFactor = 0.0; //AR bonus for higher and lower AR
 
             if (attributes.ApproachRate > 10.33)
@@ -184,16 +180,10 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             else if (attributes.ApproachRate < 8.0)
                 approachRateFactor = 0.05 * (8.0 - attributes.ApproachRate);
 
-            if (score.Mods.Any(h => h is OsuModRelax))
-                approachRateFactor = 0.0;
+            double lengthBonus = CalculateBaseLengthBonus(aimValue, attributes.AimDifficultyFactor, totalHits);
 
-            double hardLengthBonus = aimValue * 0.0001 * hard_hit_muliplier * hardHits; //Length bonus for hard hit with aimValue * offset
-
-            double easyLengthBonus = aimValue * 0.0001 * easy_hit_muliplier * easyHits; //Length bonus for easy hit with aimValue * offset
-
-            double lengthBonus = hardLengthBonus + easyLengthBonus; //Total length bonus
-
-            lengthBonus *= 1.0 + approachRateFactor;
+            if (!score.Mods.Any(h => h is OsuModRelax))
+                lengthBonus *= 1.0 + approachRateFactor;
 
             aimValue += lengthBonus;
 
@@ -222,20 +212,14 @@ namespace osu.Game.Rulesets.Osu.Difficulty
 
             double speedValue = OsuStrainSkill.DifficultyToPerformance(attributes.SpeedDifficulty);
 
-            double hardHits = totalHits * attributes.SpeedDifficultyFactor;
-
-            double easyHits = totalHits - hardHits;
-
             double approachRateFactor = 0.0; //AR bonus for higher and lower AR
 
             if (attributes.ApproachRate > 10.33)
                 approachRateFactor = 0.3 * (attributes.ApproachRate - 10.33);
 
-            double hardLengthBonus = speedValue * 0.0001 * hard_hit_muliplier * hardHits; //Length bonus for hard hit with aimValue * offset
+            SetHitMultipliers(hard_hit_muliplier, easy_hit_muliplier);
 
-            double easyLengthBonus = speedValue * 0.0001 * easy_hit_muliplier * easyHits; //Length bonus for easy hit with aimValue * offset
-
-            double lengthBonus = hardLengthBonus + easyLengthBonus; //Total length bonus
+            double lengthBonus = CalculateBaseLengthBonus(speedValue, attributes.SpeedDifficulty, totalHits);
 
             lengthBonus *= 1.0 + approachRateFactor;
 

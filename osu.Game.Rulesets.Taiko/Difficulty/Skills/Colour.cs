@@ -27,7 +27,11 @@ namespace osu.Game.Rulesets.Taiko.Difficulty.Skills
 
         protected override double StrainValueOf(DifficultyHitObject current)
         {
-            return ColourEvaluator.EvaluateDifficultyOf(current);
+            double currentStrainValue = ColourEvaluator.EvaluateDifficultyOf(current);
+
+            AddStrain(currentStrainValue);
+
+            return currentStrainValue;
         }
     }
 }

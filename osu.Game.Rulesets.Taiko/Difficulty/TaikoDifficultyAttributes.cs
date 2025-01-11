@@ -41,6 +41,12 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
         public double ColourDifficulty { get; set; }
 
         /// <summary>
+        /// The factor corresponding to the colour skill.
+        /// </summary>
+        [JsonProperty("colour_difficulty_factor")]
+        public double ColourDifficultyFactor { get; set; }
+
+        /// <summary>
         /// The difficulty corresponding to the stamina skill.
         /// </summary>
         [JsonProperty("stamina_difficulty")]

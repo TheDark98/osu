@@ -72,17 +72,20 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
             };
         }
 
-        private const double hard_hit_muliplier = 1.5; //multiplier to balance spike weigth
-        private const double easy_hit_muliplier = 0.9; //multiplier to balance filler weigth
+        private double hard_hit_muliplier = 1.5; //multiplier to balance spike weigth
+        private double easy_hit_muliplier = 0.9; //multiplier to balance filler weigth
 
         private double computeDifficultyValue(ScoreInfo score, TaikoDifficultyAttributes attributes)
         {
             double baseDifficulty = 5 * Math.Max(1.0, attributes.StarRating / 0.115) - 4.0;
             double difficultyValue = Math.Min(Math.Pow(baseDifficulty, 3) / 69052.51, Math.Pow(baseDifficulty, 2.25) / 1150.0);
 
-            SetHitMultipliers(hard_hit_muliplier, easy_hit_muliplier);
+            HardHitMuliplier = hard_hit_muliplier;
+            EasyHitMuliplier = easy_hit_muliplier;
 
-            double lengthBonus = CalculateBaseLengthBonus(baseDifficulty, attributes.StaminaDifficultyFactor, totalHits);
+            CalculateBaseLengthBonus(baseDifficulty, attributes.StaminaDifficultyFactor, totalHits);
+
+            double lengthBonus = EasyLengthBonus + HardLengthBonus;
 
             if (score.Mods.Any(m => m is ModFlashlight<TaikoHitObject>))
                 lengthBonus *= Math.Max(1, 1.050 - Math.Min(attributes.MonoStaminaFactor / 50, 1));
@@ -114,10 +117,14 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
 
             double accuracyValue = Math.Pow(70 / estimatedUnstableRate.Value, 1.1) * Math.Pow(attributes.StarRating, 0.4) * 100.0;
 
-            SetHitMultipliers(hard_hit_muliplier, easy_hit_muliplier);
+            HardHitMuliplier = hard_hit_muliplier;
+            EasyHitMuliplier = easy_hit_muliplier;
 
-            double rhythmLengthBonus = CalculateBaseLengthBonus(accuracyValue, attributes.RhythmDifficultyFactor, totalHits);
-            double colourLengthBonus = CalculateBaseLengthBonus(accuracyValue, attributes.ColourDifficultyFactor, totalHits);
+            double rhythmLengthBonus = EasyLengthBonus + HardLengthBonus;
+
+            CalculateBaseLengthBonus(accuracyValue, attributes.ColourDifficultyFactor, totalHits);
+
+            double colourLengthBonus = EasyLengthBonus + HardLengthBonus;
 
             double lengthBonus = rhythmLengthBonus + colourLengthBonus;
             lengthBonus /= 2;

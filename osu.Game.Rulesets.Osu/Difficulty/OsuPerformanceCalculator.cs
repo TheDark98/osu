@@ -140,8 +140,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             };
         }
 
-        private const double hard_hit_muliplier = 1.5; //multiplier to balance spikes weigth
-        private const double easy_hit_muliplier = 1.1; //multiplier to balance filler weigth
+        private double hard_hit_muliplier = 1.5; //multiplier to balance spikes weigth
+        private double easy_hit_muliplier = 1.1; //multiplier to balance filler weigth
 
         private double computeAimValue(ScoreInfo score, OsuDifficultyAttributes attributes)
         {
@@ -180,12 +180,21 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             else if (attributes.ApproachRate < 8.0)
                 approachRateFactor = 0.05 * (8.0 - attributes.ApproachRate);
 
-            SetHitMultipliers(hard_hit_muliplier, easy_hit_muliplier);
+            HardHitMuliplier = hard_hit_muliplier;
+            EasyHitMuliplier = easy_hit_muliplier;
 
-            double lengthBonus = CalculateBaseLengthBonus(aimValue, attributes.AimDifficultyFactor, totalHits);
+            CalculateBaseLengthBonus(aimValue, attributes.AimDifficultyFactor, totalHits);
+
+            double lengthBonus;
 
             if (!score.Mods.Any(h => h is OsuModRelax))
-                lengthBonus *= 1.0 + approachRateFactor;
+            {
+                lengthBonus = EasyLengthBonus + HardLengthBonus * (1.0 + approachRateFactor);
+            }
+            else
+            {
+                lengthBonus = EasyLengthBonus + HardLengthBonus;
+            }
 
             aimValue += lengthBonus;
 
@@ -219,11 +228,12 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             if (attributes.ApproachRate > 10.33)
                 approachRateFactor = 0.3 * (attributes.ApproachRate - 10.33);
 
-            SetHitMultipliers(hard_hit_muliplier, easy_hit_muliplier);
+            HardHitMuliplier = hard_hit_muliplier;
+            EasyHitMuliplier = easy_hit_muliplier;
 
-            double lengthBonus = CalculateBaseLengthBonus(speedValue, attributes.SpeedDifficulty, totalHits);
+            CalculateBaseLengthBonus(speedValue, attributes.SpeedDifficultyFactor, totalHits);
 
-            lengthBonus *= 1.0 + approachRateFactor;
+            double lengthBonus = EasyLengthBonus + HardLengthBonus * (1.0 + approachRateFactor);
 
             speedValue += lengthBonus;
 

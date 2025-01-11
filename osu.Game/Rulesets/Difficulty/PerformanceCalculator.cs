@@ -12,8 +12,12 @@ namespace osu.Game.Rulesets.Difficulty
     {
         protected readonly Ruleset Ruleset;
 
-        private double hardHitMuliplier; //multiplier to balance spike weigth
-        private double easyHitMuliplier; //multiplier to balance filler weigth
+        protected double HardHitMuliplier; //multiplier to balance spike weigth
+        protected double EasyHitMuliplier; //multiplier to balance filler weigth
+
+
+        protected double HardLengthBonus; //multiplier to balance filler weigth
+        protected double EasyLengthBonus; //multiplier to balance filler weigth
 
         protected PerformanceCalculator(Ruleset ruleset)
         {
@@ -36,20 +40,15 @@ namespace osu.Game.Rulesets.Difficulty
         /// <param name="attributes">The difficulty attributes for the beatmap relating to the score.</param>
         protected abstract PerformanceAttributes CreatePerformanceAttributes(ScoreInfo score, DifficultyAttributes attributes);
 
-        protected double CalculateBaseLengthBonus(double basePP, double difficultyFactor, int totalHits)
+        protected void CalculateBaseLengthBonus(double basePP, double difficultyFactor, int totalHits)
         {
+            basePP *= 0.0001;
+
             double hardHits = totalHits * difficultyFactor;
             double easyHits = totalHits - hardHits;
 
-            double hardLengthBonus = basePP * 0.0001 * hardHitMuliplier * hardHits; //Length bonus for hard hit with basePP * offset
-            double easyLengthBonus = basePP * 0.0001 * easyHitMuliplier * easyHits; //Length bonus for easy hit with basePP * offset
-            return hardLengthBonus + easyLengthBonus;
-        }
-
-        protected void SetHitMultipliers(double hardHitMuliplier, double easyHitMuliplier)
-        {
-            this.hardHitMuliplier = hardHitMuliplier;
-            this.easyHitMuliplier = easyHitMuliplier;
+            HardLengthBonus = basePP * HardHitMuliplier * hardHits; //Length bonus for hard hit with basePP * offset
+            EasyLengthBonus = basePP * EasyHitMuliplier * easyHits; //Length bonus for easy hit with basePP * offset
         }
     }
 }

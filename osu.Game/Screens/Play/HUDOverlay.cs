@@ -85,6 +85,7 @@ namespace osu.Game.Screens.Play
         private readonly BindableBool replayLoaded = new BindableBool();
 
         private static bool hasShownNotificationOnce;
+
         private readonly FillFlowContainer bottomRightElements;
 
         internal readonly FillFlowContainer TopRightElements;
@@ -237,7 +238,7 @@ namespace osu.Game.Screens.Play
             {
                 if (e.NewValue)
                 {
-                    ModDisplay.FadeIn(1000, FADE_EASING);
+                    ModDisplay.FadeIn(200);
                     InputCountController.Margin = new MarginPadding(10) { Bottom = 30 };
                 }
                 else
@@ -248,9 +249,6 @@ namespace osu.Game.Screens.Play
 
                 updateVisibility();
             }, true);
-
-            ModDisplay.ExpansionMode = ExpansionMode.AlwaysExpanded;
-            Scheduler.AddDelayed(() => ModDisplay.ExpansionMode = ExpansionMode.ExpandOnHover, 1200);
         }
 
         protected override void Update()

@@ -300,7 +300,7 @@ namespace osu.Game.Screens.Edit.Compose.Components.Timeline
 
                 createStateBindables();
                 updateTernaryStates();
-                togglesCollection.AddRange(createTernaryButtons());
+                togglesCollection.AddRange(createTernaryButtons().Select(b => new DrawableTernaryButton(b) { RelativeSizeAxes = Axes.None, Size = new Vector2(40, 40) }));
             }
 
             private string? getCommonBank() => allRelevantSamples.Select(h => GetBankValue(h.samples)).Distinct().Count() == 1
@@ -409,7 +409,7 @@ namespace osu.Game.Screens.Edit.Compose.Components.Timeline
 
             private void createStateBindables()
             {
-                foreach (string sampleName in HitSampleInfo.ALL_ADDITIONS)
+                foreach (string sampleName in HitSampleInfo.AllAdditions)
                 {
                     var bindable = new Bindable<TernaryState>
                     {
@@ -433,7 +433,7 @@ namespace osu.Game.Screens.Edit.Compose.Components.Timeline
                     selectionSampleStates[sampleName] = bindable;
                 }
 
-                banks.AddRange(HitSampleInfo.ALL_BANKS.Prepend(EditorSelectionHandler.HIT_BANK_AUTO));
+                banks.AddRange(HitSampleInfo.AllBanks.Prepend(EditorSelectionHandler.HIT_BANK_AUTO));
             }
 
             private void updateTernaryStates()
@@ -444,19 +444,10 @@ namespace osu.Game.Screens.Edit.Compose.Components.Timeline
                 }
             }
 
-            private IEnumerable<DrawableTernaryButton> createTernaryButtons()
+            private IEnumerable<TernaryButton> createTernaryButtons()
             {
                 foreach ((string sampleName, var bindable) in selectionSampleStates)
-                {
-                    yield return new DrawableTernaryButton
-                    {
-                        Current = bindable,
-                        Description = string.Empty,
-                        CreateIcon = () => ComposeBlueprintContainer.GetIconForSample(sampleName),
-                        RelativeSizeAxes = Axes.None,
-                        Size = new Vector2(40, 40),
-                    };
-                }
+                    yield return new TernaryButton(bindable, string.Empty, () => ComposeBlueprintContainer.GetIconForSample(sampleName));
             }
 
             private void addHitSample(string sampleName)
@@ -525,7 +516,7 @@ namespace osu.Game.Screens.Edit.Compose.Components.Timeline
 
                     if (item is not DrawableTernaryButton button) return base.OnKeyDown(e);
 
-                    button.Toggle();
+                    button.Button.Toggle();
                 }
 
                 return true;

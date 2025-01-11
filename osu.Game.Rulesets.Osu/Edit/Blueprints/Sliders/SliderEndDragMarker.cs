@@ -10,7 +10,6 @@ using osu.Framework.Utils;
 using osu.Game.Graphics;
 using osu.Game.Rulesets.Osu.Objects;
 using osuTK;
-using osuTK.Input;
 
 namespace osu.Game.Rulesets.Osu.Edit.Blueprints.Sliders
 {
@@ -76,10 +75,6 @@ namespace osu.Game.Rulesets.Osu.Edit.Blueprints.Sliders
             EndDrag?.Invoke();
             base.OnDragEnd(e);
         }
-
-        protected override bool OnMouseDown(MouseDownEvent e) => e.Button == MouseButton.Left;
-
-        protected override bool OnClick(ClickEvent e) => e.Button == MouseButton.Left;
 
         private void updateState()
         {

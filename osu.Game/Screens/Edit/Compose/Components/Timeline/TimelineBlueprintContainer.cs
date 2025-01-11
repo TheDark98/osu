@@ -16,7 +16,6 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Input.Events;
 using osu.Framework.Utils;
-using osu.Game.Audio;
 using osu.Game.Graphics;
 using osu.Game.Rulesets.Edit;
 using osu.Game.Rulesets.Objects;
@@ -132,8 +131,7 @@ namespace osu.Game.Screens.Edit.Compose.Components.Timeline
 
         private void updateSamplePointContractedState()
         {
-            const double absolute_minimum_gap = 31; // assumes single letter bank name for default banks
-            double minimumGap = absolute_minimum_gap;
+            const double minimum_gap = 28;
 
             if (timeline == null || editorClock == null)
                 return;
@@ -155,31 +153,8 @@ namespace osu.Game.Screens.Edit.Compose.Components.Timeline
                 if (hitObject.GetEndTime() < editorClock.CurrentTime - timeline.VisibleRange / 2)
                     break;
 
-                for (int i = 0; i < hitObject.Samples.Count; i++)
-                {
-                    var sample = hitObject.Samples[i];
-
-                    if (!HitSampleInfo.ALL_BANKS.Contains(sample.Bank))
-                        minimumGap = Math.Max(minimumGap, absolute_minimum_gap + sample.Bank.Length * 3);
-                }
-
                 if (hitObject is IHasRepeats hasRepeats)
-                {
                     smallestTimeGap = Math.Min(smallestTimeGap, hasRepeats.Duration / hasRepeats.SpanCount() / 2);
-
-                    for (int i = 0; i < hasRepeats.NodeSamples.Count; i++)
-                    {
-                        var node = hasRepeats.NodeSamples[i];
-
-                        for (int j = 0; j < node.Count; j++)
-                        {
-                            var sample = node[j];
-
-                            if (!HitSampleInfo.ALL_BANKS.Contains(sample.Bank))
-                                minimumGap = Math.Max(minimumGap, absolute_minimum_gap + sample.Bank.Length * 3);
-                        }
-                    }
-                }
 
                 double gap = lastTime - hitObject.GetEndTime();
 
@@ -192,7 +167,7 @@ namespace osu.Game.Screens.Edit.Compose.Components.Timeline
             }
 
             double smallestAbsoluteGap = ((TimelineSelectionBlueprintContainer)SelectionBlueprints).ContentRelativeToAbsoluteFactor.X * smallestTimeGap;
-            SamplePointContracted.Value = smallestAbsoluteGap < minimumGap;
+            SamplePointContracted.Value = smallestAbsoluteGap < minimum_gap;
         }
 
         private readonly Stack<HitObject> currentConcurrentObjects = new Stack<HitObject>();

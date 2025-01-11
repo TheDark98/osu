@@ -137,27 +137,11 @@ namespace osu.Game.Rulesets.Osu.Edit.Blueprints.Sliders.Components
         /// <summary>
         /// Delete all visually selected <see cref="PathControlPoint"/>s.
         /// </summary>
-        /// <returns>Whether any change actually took place.</returns>
+        /// <returns></returns>
         public bool DeleteSelected()
         {
             List<PathControlPoint> toRemove = Pieces.Where(p => p.IsSelected.Value).Select(p => p.ControlPoint).ToList();
 
-            if (!Delete(toRemove))
-                return false;
-
-            // Since pieces are re-used, they will not point to the deleted control points while remaining selected
-            foreach (var piece in Pieces)
-                piece.IsSelected.Value = false;
-
-            return true;
-        }
-
-        /// <summary>
-        /// Delete the specified <see cref="PathControlPoint"/>s.
-        /// </summary>
-        /// <returns>Whether any change actually took place.</returns>
-        public bool Delete(List<PathControlPoint> toRemove)
-        {
             // Ensure that there are any points to be deleted
             if (toRemove.Count == 0)
                 return false;
@@ -165,6 +149,11 @@ namespace osu.Game.Rulesets.Osu.Edit.Blueprints.Sliders.Components
             changeHandler?.BeginChange();
             RemoveControlPointsRequested?.Invoke(toRemove);
             changeHandler?.EndChange();
+
+            // Since pieces are re-used, they will not point to the deleted control points while remaining selected
+            foreach (var piece in Pieces)
+                piece.IsSelected.Value = false;
+
             return true;
         }
 

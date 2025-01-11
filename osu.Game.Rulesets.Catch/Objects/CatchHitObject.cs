@@ -210,27 +210,11 @@ namespace osu.Game.Rulesets.Catch.Objects
         /// </summary>
         public float LegacyConvertedY { get; set; } = DEFAULT_LEGACY_CONVERT_Y;
 
-        float IHasXPosition.X
-        {
-            get => OriginalX;
-            set => OriginalX = value;
-        }
+        float IHasXPosition.X => OriginalX;
 
-        float IHasYPosition.Y
-        {
-            get => LegacyConvertedY;
-            set => LegacyConvertedY = value;
-        }
+        float IHasYPosition.Y => LegacyConvertedY;
 
-        Vector2 IHasPosition.Position
-        {
-            get => new Vector2(OriginalX, LegacyConvertedY);
-            set
-            {
-                ((IHasXPosition)this).X = value.X;
-                ((IHasYPosition)this).Y = value.Y;
-            }
-        }
+        Vector2 IHasPosition.Position => new Vector2(OriginalX, LegacyConvertedY);
 
         #endregion
     }

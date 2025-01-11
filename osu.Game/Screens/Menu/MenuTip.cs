@@ -122,8 +122,7 @@ namespace osu.Game.Screens.Menu
                 MenuTipStrings.RandomSkinShortcut,
                 MenuTipStrings.ToggleReplaySettingsShortcut,
                 MenuTipStrings.CopyModsFromScore,
-                MenuTipStrings.AutoplayBeatmapShortcut,
-                MenuTipStrings.LazerIsNotAWord
+                MenuTipStrings.AutoplayBeatmapShortcut
             };
 
             return tips[RNG.Next(0, tips.Length)];

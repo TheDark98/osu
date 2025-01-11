@@ -1,32 +1,23 @@
 // Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
-using System;
-using Humanizer;
 using osu.Framework.Allocation;
-using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
-using osu.Game.Graphics.UserInterface;
 using osu.Game.Rulesets.Edit;
 
 namespace osu.Game.Screens.Edit.Components.TernaryButtons
 {
     public partial class SampleBankTernaryButton : CompositeDrawable
     {
-        public string BankName { get; }
-        public Func<Drawable>? CreateIcon { get; init; }
+        public readonly TernaryButton NormalButton;
+        public readonly TernaryButton AdditionsButton;
 
-        public readonly BindableWithCurrent<TernaryState> NormalState = new BindableWithCurrent<TernaryState>();
-        public readonly BindableWithCurrent<TernaryState> AdditionsState = new BindableWithCurrent<TernaryState>();
-
-        public DrawableTernaryButton NormalButton { get; private set; } = null!;
-        public DrawableTernaryButton AdditionsButton { get; private set; } = null!;
-
-        public SampleBankTernaryButton(string bankName)
+        public SampleBankTernaryButton(TernaryButton normalButton, TernaryButton additionsButton)
         {
-            BankName = bankName;
+            NormalButton = normalButton;
+            AdditionsButton = additionsButton;
         }
 
         [BackgroundDependencyLoader]
@@ -45,12 +36,7 @@ namespace osu.Game.Screens.Edit.Components.TernaryButtons
                     AutoSizeAxes = Axes.Y,
                     Width = 0.5f,
                     Padding = new MarginPadding { Right = 1 },
-                    Child = NormalButton = new InlineDrawableTernaryButton
-                    {
-                        Current = NormalState,
-                        Description = BankName.Titleize(),
-                        CreateIcon = CreateIcon,
-                    },
+                    Child = new InlineDrawableTernaryButton(NormalButton),
                 },
                 new Container
                 {
@@ -60,18 +46,18 @@ namespace osu.Game.Screens.Edit.Components.TernaryButtons
                     AutoSizeAxes = Axes.Y,
                     Width = 0.5f,
                     Padding = new MarginPadding { Left = 1 },
-                    Child = AdditionsButton = new InlineDrawableTernaryButton
-                    {
-                        Current = AdditionsState,
-                        Description = BankName.Titleize(),
-                        CreateIcon = CreateIcon,
-                    },
+                    Child = new InlineDrawableTernaryButton(AdditionsButton),
                 },
             };
         }
 
         private partial class InlineDrawableTernaryButton : DrawableTernaryButton
         {
+            public InlineDrawableTernaryButton(TernaryButton button)
+                : base(button)
+            {
+            }
+
             [BackgroundDependencyLoader]
             private void load()
             {

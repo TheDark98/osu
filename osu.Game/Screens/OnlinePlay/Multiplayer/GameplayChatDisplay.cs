@@ -19,8 +19,6 @@ namespace osu.Game.Screens.OnlinePlay.Multiplayer
         [Resolved(CanBeNull = true)]
         private ILocalUserPlayInfo? localUserInfo { get; set; }
 
-        protected new ChatTextBox TextBox => base.TextBox!;
-
         private readonly IBindable<LocalUserPlayingState> localUserPlaying = new Bindable<LocalUserPlayingState>();
 
         public override bool PropagatePositionalInputSubTree => localUserPlaying.Value != LocalUserPlayingState.Playing;
@@ -60,7 +58,7 @@ namespace osu.Game.Screens.OnlinePlay.Multiplayer
 
             localUserPlaying.BindValueChanged(playing =>
             {
-                // for now let's never hold focus. this avoids misdirected gameplay keys entering chat.
+                // for now let's never hold focus. this avoid misdirected gameplay keys entering chat.
                 // note that this is done within this callback as it triggers an un-focus as well.
                 TextBox.HoldFocus = false;
 

@@ -269,9 +269,10 @@ namespace osu.Game.Rulesets.Edit
                 };
             }
 
-            togglesCollection.AddRange(CreateTernaryButtons().ToArray());
+            TernaryStates = CreateTernaryButtons().ToArray();
+            togglesCollection.AddRange(TernaryStates.Select(b => new DrawableTernaryButton(b)));
 
-            sampleBankTogglesCollection.AddRange(BlueprintContainer.SampleBankTernaryStates);
+            sampleBankTogglesCollection.AddRange(BlueprintContainer.SampleBankTernaryStates.Zip(BlueprintContainer.SampleAdditionBankTernaryStates).Select(b => new SampleBankTernaryButton(b.First, b.Second)));
 
             SetSelectTool();
 
@@ -368,9 +369,14 @@ namespace osu.Game.Rulesets.Edit
         protected abstract IReadOnlyList<CompositionTool> CompositionTools { get; }
 
         /// <summary>
+        /// A collection of states which will be displayed to the user in the toolbox.
+        /// </summary>
+        public TernaryButton[] TernaryStates { get; private set; }
+
+        /// <summary>
         /// Create all ternary states required to be displayed to the user.
         /// </summary>
-        protected virtual IEnumerable<DrawableTernaryButton> CreateTernaryButtons() => BlueprintContainer.MainTernaryStates;
+        protected virtual IEnumerable<TernaryButton> CreateTernaryButtons() => BlueprintContainer.MainTernaryStates;
 
         /// <summary>
         /// Construct a relevant blueprint container. This will manage hitobject selection/placement input handling and display logic.
@@ -431,7 +437,7 @@ namespace osu.Game.Rulesets.Edit
                 {
                     if (togglesCollection.ElementAtOrDefault(rightIndex) is DrawableTernaryButton button)
                     {
-                        button.Toggle();
+                        button.Button.Toggle();
                         return true;
                     }
                 }

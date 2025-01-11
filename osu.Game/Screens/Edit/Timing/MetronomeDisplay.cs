@@ -12,7 +12,6 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input.Events;
 using osu.Framework.Threading;
 using osu.Framework.Timing;
 using osu.Framework.Utils;
@@ -41,9 +40,6 @@ namespace osu.Game.Screens.Edit.Timing
 
         [Resolved]
         private OverlayColourProvider overlayColourProvider { get; set; } = null!;
-
-        [Resolved]
-        private BindableBeatDivisor beatDivisor { get; set; } = null!;
 
         public bool EnableClicking
         {
@@ -226,7 +222,7 @@ namespace osu.Game.Screens.Edit.Timing
             Clock = new FramedClock(metronomeClock = new StopwatchClock(true));
         }
 
-        private double effectiveBeatLength;
+        private double beatLength;
 
         private TimingControlPoint timingPoint = null!;
 
@@ -236,26 +232,11 @@ namespace osu.Game.Screens.Edit.Timing
 
         private ScheduledDelegate? latchDelegate;
 
-        private bool spedUp;
-
-        private int computeSpedUpDivisor()
-        {
-            if (!spedUp)
-                return 1;
-
-            if (beatDivisor.Value % 3 == 0)
-                return 3;
-            if (beatDivisor.Value % 2 == 0)
-                return 2;
-
-            return 1;
-        }
-
         protected override void LoadComplete()
         {
             base.LoadComplete();
 
-            interpolatedBpm.BindValueChanged(_ => bpmText.Text = interpolatedBpm.Value.ToLocalisableString());
+            interpolatedBpm.BindValueChanged(bpm => bpmText.Text = bpm.NewValue.ToLocalisableString());
         }
 
         protected override void Update()
@@ -269,20 +250,16 @@ namespace osu.Game.Screens.Edit.Timing
 
             timingPoint = BeatSyncSource.ControlPoints.TimingPointAt(BeatSyncSource.Clock.CurrentTime);
 
-            Divisor = metronomeTick.Divisor = computeSpedUpDivisor();
-
-            if (effectiveBeatLength != timingPoint.BeatLength / Divisor)
+            if (beatLength != timingPoint.BeatLength)
             {
-                effectiveBeatLength = timingPoint.BeatLength / Divisor;
+                beatLength = timingPoint.BeatLength;
 
                 EarlyActivationMilliseconds = timingPoint.BeatLength / 2;
 
-                double effectiveBpm = 60000 / effectiveBeatLength;
-
-                float bpmRatio = (float)Interpolation.ApplyEasing(Easing.OutQuad, Math.Clamp((effectiveBpm - 30) / 480, 0, 1));
+                float bpmRatio = (float)Interpolation.ApplyEasing(Easing.OutQuad, Math.Clamp((timingPoint.BPM - 30) / 480, 0, 1));
 
                 weight.MoveToY((float)Interpolation.Lerp(0.1f, 0.83f, bpmRatio), 600, Easing.OutQuint);
-                this.TransformBindableTo(interpolatedBpm, (int)Math.Round(effectiveBpm), 600, Easing.OutQuint);
+                this.TransformBindableTo(interpolatedBpm, (int)Math.Round(timingPoint.BPM), 600, Easing.OutQuint);
             }
 
             if (!BeatSyncSource.Clock.IsRunning && isSwinging)
@@ -328,7 +305,7 @@ namespace osu.Game.Screens.Edit.Timing
             float currentAngle = swing.Rotation;
             float targetAngle = currentAngle > 0 ? -angle : angle;
 
-            swing.RotateTo(targetAngle, effectiveBeatLength, Easing.InOutQuad);
+            swing.RotateTo(targetAngle, beatLength, Easing.InOutQuad);
         }
 
         private void onTickPlayed()
@@ -336,24 +313,8 @@ namespace osu.Game.Screens.Edit.Timing
             // Originally, this flash only occurred when the pendulum correctly passess the centre.
             // Mappers weren't happy with the metronome tick not playing immediately after starting playback
             // so now this matches the actual tick sample.
-            stick.FlashColour(overlayColourProvider.Content1, effectiveBeatLength, Easing.OutQuint);
+            stick.FlashColour(overlayColourProvider.Content1, beatLength, Easing.OutQuint);
         }
-
-        protected override bool OnKeyDown(KeyDownEvent e)
-        {
-            updateDivisorFromKey(e);
-
-            return base.OnKeyDown(e);
-        }
-
-        protected override void OnKeyUp(KeyUpEvent e)
-        {
-            base.OnKeyUp(e);
-
-            updateDivisorFromKey(e);
-        }
-
-        private void updateDivisorFromKey(UIEvent e) => spedUp = e.ControlPressed;
 
         private partial class MetronomeTick : BeatSyncedContainer
         {

@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using JetBrains.Annotations;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
@@ -133,7 +132,6 @@ namespace osu.Game.Overlays.Chat
             Channel.PendingMessageResolved -= pendingMessageResolved;
         }
 
-        [CanBeNull]
         protected virtual ChatLine CreateChatLine(Message m) => new ChatLine(m);
 
         protected virtual DaySeparator CreateDaySeparator(DateTimeOffset time) => new DaySeparator(time);
@@ -157,13 +155,8 @@ namespace osu.Game.Overlays.Chat
             {
                 addDaySeparatorIfRequired(lastMessage, message);
 
-                var chatLine = CreateChatLine(message);
-
-                if (chatLine != null)
-                {
-                    ChatLineFlow.Add(chatLine);
-                    lastMessage = message;
-                }
+                ChatLineFlow.Add(CreateChatLine(message));
+                lastMessage = message;
             }
 
             var staleMessages = chatLines.Where(c => c.LifetimeEnd == double.MaxValue).ToArray();

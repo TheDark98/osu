@@ -54,10 +54,6 @@ namespace osu.Game.Users
         }
 
         [MessagePackObject]
-        [Union(12, typeof(InSoloGame))]
-        [Union(23, typeof(InMultiplayerGame))]
-        [Union(24, typeof(SpectatingMultiplayerGame))]
-        [Union(31, typeof(InPlaylistGame))]
         public abstract class InGame : UserActivity
         {
             [Key(0)]

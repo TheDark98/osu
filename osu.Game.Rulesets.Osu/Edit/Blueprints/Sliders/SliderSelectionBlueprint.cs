@@ -140,11 +140,8 @@ namespace osu.Game.Rulesets.Osu.Edit.Blueprints.Sliders
             if (hoveredControlPoint == null)
                 return false;
 
-            if (hoveredControlPoint.IsSelected.Value)
-                ControlPointVisualiser?.DeleteSelected();
-            else
-                ControlPointVisualiser?.Delete([hoveredControlPoint.ControlPoint]);
-
+            hoveredControlPoint.IsSelected.Value = true;
+            ControlPointVisualiser?.DeleteSelected();
             return true;
         }
 
@@ -626,7 +623,7 @@ namespace osu.Game.Rulesets.Osu.Edit.Blueprints.Sliders
 
         public override bool ReceivePositionalInputAt(Vector2 screenSpacePos)
         {
-            if (BodyPiece.ReceivePositionalInputAt(screenSpacePos) && DrawableObject.Body.Alpha > 0)
+            if (BodyPiece.ReceivePositionalInputAt(screenSpacePos))
                 return true;
 
             if (ControlPointVisualiser == null)

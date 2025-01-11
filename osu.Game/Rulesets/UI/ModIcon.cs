@@ -39,18 +39,7 @@ namespace osu.Game.Rulesets.UI
         private IMod mod;
 
         private readonly bool showTooltip;
-
-        private bool showExtendedInformation;
-
-        public bool ShowExtendedInformation
-        {
-            get => showExtendedInformation;
-            set
-            {
-                showExtendedInformation = value;
-                updateExtendedInformation();
-            }
-        }
+        private readonly bool showExtendedInformation;
 
         public IMod Mod
         {

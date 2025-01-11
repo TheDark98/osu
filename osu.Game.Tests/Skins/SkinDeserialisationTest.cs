@@ -68,9 +68,7 @@ namespace osu.Game.Tests.Skins
             // Covers legacy rank display
             "Archives/modified-classic-20230809.osk",
             // Covers legacy key counter
-            "Archives/modified-classic-20240724.osk",
-            // Covers skinnable mod display
-            "Archives/modified-default-20241207.osk",
+            "Archives/modified-classic-20240724.osk"
         };
 
         /// <summary>

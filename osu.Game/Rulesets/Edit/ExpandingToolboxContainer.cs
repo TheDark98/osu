@@ -55,6 +55,12 @@ namespace osu.Game.Rulesets.Edit
             }
         }
 
+        protected override bool ReceivePositionalInputAtSubTree(Vector2 screenSpacePos) => base.ReceivePositionalInputAtSubTree(screenSpacePos) && anyToolboxHovered(screenSpacePos);
+
+        public override bool ReceivePositionalInputAt(Vector2 screenSpacePos) => base.ReceivePositionalInputAt(screenSpacePos) && anyToolboxHovered(screenSpacePos);
+
+        private bool anyToolboxHovered(Vector2 screenSpacePos) => FillFlow.ScreenSpaceDrawQuad.Contains(screenSpacePos);
+
         protected override bool OnMouseDown(MouseDownEvent e) => true;
 
         protected override bool OnClick(ClickEvent e) => true;

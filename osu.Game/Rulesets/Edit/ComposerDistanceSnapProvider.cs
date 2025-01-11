@@ -191,14 +191,9 @@ namespace osu.Game.Rulesets.Edit
             }
         }
 
-        public IEnumerable<DrawableTernaryButton> CreateTernaryButtons() => new[]
+        public IEnumerable<TernaryButton> CreateTernaryButtons() => new[]
         {
-            new DrawableTernaryButton
-            {
-                Current = DistanceSnapToggle,
-                Description = "Distance Snap",
-                CreateIcon = () => new SpriteIcon { Icon = OsuIcon.EditorDistanceSnap },
-            }
+            new TernaryButton(DistanceSnapToggle, "Distance Snap", () => new SpriteIcon { Icon = OsuIcon.EditorDistanceSnap })
         };
 
         public void HandleToggleViaKey(KeyboardEvent key)

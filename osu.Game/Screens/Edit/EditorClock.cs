@@ -6,8 +6,6 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using JetBrains.Annotations;
-using osu.Framework.Audio;
 using osu.Framework.Audio.Track;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
@@ -25,14 +23,11 @@ namespace osu.Game.Screens.Edit
     /// </summary>
     public partial class EditorClock : CompositeComponent, IFrameBasedClock, IAdjustableClock, ISourceChangeableClock
     {
-        [CanBeNull]
-        public event Action TrackChanged;
+        public IBindable<Track> Track => track;
 
         private readonly Bindable<Track> track = new Bindable<Track>();
 
         public double TrackLength => track.Value?.IsLoaded == true ? track.Value.Length : 60000;
-
-        public AudioAdjustments AudioAdjustments { get; } = new AudioAdjustments();
 
         public ControlPointInfo ControlPointInfo => Beatmap.ControlPointInfo;
 
@@ -61,8 +56,6 @@ namespace osu.Game.Screens.Edit
 
             underlyingClock = new FramedBeatmapClock(applyOffsets: true, requireDecoupling: true);
             AddInternal(underlyingClock);
-
-            track.BindValueChanged(_ => TrackChanged?.Invoke());
         }
 
         /// <summary>
@@ -215,16 +208,7 @@ namespace osu.Game.Screens.Edit
             }
         }
 
-        public void BindAdjustments() => track.Value?.BindAdjustments(AudioAdjustments);
-
-        public void UnbindAdjustments() => track.Value?.UnbindAdjustments(AudioAdjustments);
-
-        public void ResetSpeedAdjustments()
-        {
-            AudioAdjustments.RemoveAllAdjustments(AdjustableProperty.Frequency);
-            AudioAdjustments.RemoveAllAdjustments(AdjustableProperty.Tempo);
-            underlyingClock.ResetSpeedAdjustments();
-        }
+        public void ResetSpeedAdjustments() => underlyingClock.ResetSpeedAdjustments();
 
         double IAdjustableClock.Rate
         {
@@ -247,12 +231,8 @@ namespace osu.Game.Screens.Edit
 
         public void ChangeSource(IClock source)
         {
-            UnbindAdjustments();
-
             track.Value = source as Track;
             underlyingClock.ChangeSource(source);
-
-            BindAdjustments();
         }
 
         public IClock Source => underlyingClock.Source;

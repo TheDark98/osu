@@ -8,7 +8,6 @@ using osu.Framework.Bindables;
 using osu.Game.Audio;
 using osu.Game.Beatmaps;
 using osu.Game.Beatmaps.ControlPoints;
-using osu.Game.Beatmaps.Legacy;
 
 namespace osu.Game.Rulesets.Objects.Legacy
 {
@@ -56,11 +55,6 @@ namespace osu.Game.Rulesets.Objects.Legacy
         }
 
         public bool GenerateTicks { get; set; } = true;
-
-        public ConvertSlider()
-        {
-            LegacyType = LegacyHitObjectType.Slider;
-        }
 
         protected override void ApplyDefaultsToSelf(ControlPointInfo controlPointInfo, IBeatmapDifficultyInfo difficulty)
         {

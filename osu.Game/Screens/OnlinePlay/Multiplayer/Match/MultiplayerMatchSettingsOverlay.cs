@@ -568,9 +568,6 @@ namespace osu.Game.Screens.OnlinePlay.Multiplayer.Match
             [Description("Off")]
             Off = 0,
 
-            [Description("10 seconds")]
-            Seconds10 = 10,
-
             [Description("30 seconds")]
             Seconds30 = 30,
 

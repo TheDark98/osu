@@ -180,6 +180,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             else if (attributes.ApproachRate < 8.0)
                 approachRateFactor = 0.05 * (8.0 - attributes.ApproachRate);
 
+            SetHitMultipliers(hard_hit_muliplier, easy_hit_muliplier);
+
             double lengthBonus = CalculateBaseLengthBonus(aimValue, attributes.AimDifficultyFactor, totalHits);
 
             if (!score.Mods.Any(h => h is OsuModRelax))

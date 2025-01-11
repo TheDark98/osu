@@ -140,8 +140,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             };
         }
 
-        private const double hard_hit_muliplier = 3.0; //multiplier to balance spike weigth
-        private const double easy_hit_muliplier = 0.7; //multiplier to balance filler weigth
+        private const double hard_hit_muliplier = 1.5; //multiplier to balance spike weigth
+        private const double easy_hit_muliplier = 1.1; //multiplier to balance filler weigth
 
         private double computeAimValue(ScoreInfo score, OsuDifficultyAttributes attributes)
         {

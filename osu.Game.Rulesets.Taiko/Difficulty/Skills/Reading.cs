@@ -33,10 +33,12 @@ namespace osu.Game.Rulesets.Taiko.Difficulty.Skills
                 return 0.0;
             }
 
-            var taikoObject = (TaikoDifficultyHitObject)current;
+            double currentStrainValue = ReadingEvaluator.EvaluateDifficultyOf((TaikoDifficultyHitObject)current) * SkillMultiplier;
 
             currentStrain *= StrainDecayBase;
-            currentStrain += ReadingEvaluator.EvaluateDifficultyOf(taikoObject) * SkillMultiplier;
+            currentStrain += currentStrainValue;
+
+            AddStrain(currentStrainValue);
 
             return currentStrain;
         }

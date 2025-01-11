@@ -37,12 +37,12 @@ namespace osu.Game.Rulesets.Taiko.Difficulty.Skills
 
         protected override double StrainValueAt(DifficultyHitObject current)
         {
-            double currentStrain = StaminaEvaluator.EvaluateDifficultyOf(current) * skillMultiplier;
+            double currentStrainValue = StaminaEvaluator.EvaluateDifficultyOf(current) * skillMultiplier;
 
             currentStrain *= strainDecay(current.DeltaTime);
-            currentStrain += currentStrain;
+            currentStrain += currentStrainValue;
 
-            AddStrain(currentStrain);
+            AddStrain(currentStrainValue);
 
             // Safely prevents previous strains from shifting as new notes are added.
             var currentObject = current as TaikoDifficultyHitObject;

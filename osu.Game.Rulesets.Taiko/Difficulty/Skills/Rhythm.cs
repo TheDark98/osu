@@ -32,6 +32,8 @@ namespace osu.Game.Rulesets.Taiko.Difficulty.Skills
             // To prevent abuse of exceedingly long intervals between awkward rhythms, we penalise its difficulty.
             difficulty *= DifficultyCalculationUtils.Logistic(current.DeltaTime, 350, -1 / 25.0, 0.5) + 0.5;
 
+            AddStrain(difficulty);
+
             return difficulty;
         }
     }

@@ -17,6 +17,12 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
         public double RhythmDifficulty { get; set; }
 
         /// <summary>
+        /// The difficulty corresponding to the rhythm skill.
+        /// </summary>
+        [JsonProperty("rhythm_difficulty_factor")]
+        public double RhythmDifficultyFactor { get; set; }
+
+        /// <summary>
         /// The difficulty corresponding to the reading skill.
         /// </summary>
         [JsonProperty("reading_difficulty")]
@@ -33,6 +39,12 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
         /// </summary>
         [JsonProperty("stamina_difficulty")]
         public double StaminaDifficulty { get; set; }
+
+        /// <summary>
+        /// The difficulty corresponding to the stamina skill.
+        /// </summary>
+        [JsonProperty("stamina_difficulty_factor")]
+        public double StaminaDifficultyFactor { get; set; }
 
         /// <summary>
         /// The ratio of stamina difficulty from mono-color (single colour) streams to total stamina difficulty.

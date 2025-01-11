@@ -115,6 +115,9 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
             double monoStaminaRating = singleColourStamina.DifficultyValue() * stamina_skill_multiplier;
             double monoStaminaFactor = staminaRating == 0 ? 1 : Math.Pow(monoStaminaRating / staminaRating, 5);
 
+            double rhythmDifficultyFactor = rhythm.DifficultyFactor();
+            double staminaDifficultyFactor = stamina.DifficultyFactor();
+
             double colourDifficultStrains = colour.CountTopWeightedStrains();
             double readingDifficultStrains = reading.CountTopWeightedStrains();
             double staminaDifficultStrains = stamina.CountTopWeightedStrains();
@@ -140,9 +143,11 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
                 StarRating = starRating,
                 Mods = mods,
                 RhythmDifficulty = rhythmRating,
+                RhythmDifficultyFactor = rhythmDifficultyFactor,
                 ReadingDifficulty = readingRating,
                 ColourDifficulty = colourRating,
                 StaminaDifficulty = staminaRating,
+                StaminaDifficultyFactor = staminaDifficultyFactor,
                 MonoStaminaFactor = monoStaminaFactor,
                 ReadingTopStrains = readingDifficultStrains,
                 ColourTopStrains = colourDifficultStrains,

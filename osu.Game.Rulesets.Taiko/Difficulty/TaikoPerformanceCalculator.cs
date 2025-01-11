@@ -76,6 +76,8 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
             double baseDifficulty = 5 * Math.Max(1.0, attributes.StarRating / 0.115) - 4.0;
             double difficultyValue = Math.Min(Math.Pow(baseDifficulty, 3) / 69052.51, Math.Pow(baseDifficulty, 2.25) / 1150.0);
 
+            double staminaFactor = attributes.StaminaDifficultyFactor;
+
             double lengthBonus = 1 + 0.1 * Math.Min(1.0, totalHits / 1500.0);
             difficultyValue *= lengthBonus;
 
@@ -104,6 +106,8 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
         {
             if (attributes.GreatHitWindow <= 0 || estimatedUnstableRate == null)
                 return 0;
+
+            double rhythmFactor = attributes.RhythmDifficultyFactor;
 
             double accuracyValue = Math.Pow(70 / estimatedUnstableRate.Value, 1.1) * Math.Pow(attributes.StarRating, 0.4) * 100.0;
 

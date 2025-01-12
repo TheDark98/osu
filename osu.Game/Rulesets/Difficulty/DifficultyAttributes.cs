@@ -45,7 +45,7 @@ namespace osu.Game.Rulesets.Difficulty
         public double StarRating { get; set; }
 
         /// <summary>
-        /// The difficulty corresponding to the rhythm skill.
+        /// The factor corresponding to all skills.
         /// </summary>
         [JsonProperty("total_difficulty_factor")]
         public double TotalDifficultyFactor { get; set; }

@@ -28,6 +28,11 @@ namespace osu.Game.Rulesets.Difficulty.Skills
         }
 
         /// <summary>
+        /// Factor value representing all <see cref="DifficultyHitObject"/>s / hardest one that have been processed up to this point.
+        /// </summary>
+        public double DifficultyFactor;
+
+        /// <summary>
         /// Process a <see cref="DifficultyHitObject"/>.
         /// </summary>
         /// <param name="current">The <see cref="DifficultyHitObject"/> to process.</param>
@@ -37,10 +42,5 @@ namespace osu.Game.Rulesets.Difficulty.Skills
         /// Returns the calculated difficulty value representing all <see cref="DifficultyHitObject"/>s that have been processed up to this point.
         /// </summary>
         public abstract double DifficultyValue();
-
-        /// <summary>
-        /// Returns the factor difficulty value representing all <see cref="DifficultyHitObject"/>s that have been processed up to this point.
-        /// </summary>
-        public abstract double DifficultyFactor();
     }
 }

@@ -28,12 +28,6 @@ namespace osu.Game.Rulesets.Difficulty.Skills
         private double currentSectionPeak; // We also keep track of the peak strain level in the current section.
         private double currentSectionEnd;
 
-        private double maxDifficulty; //Max difficulty of a single object
-
-        private double summedDifficulty; //Summed difficulty of a single object
-
-        protected double AddedStrain; //Summed difficulty of a single object
-
         private readonly List<double> strainPeaks = new List<double>();
         protected readonly List<double> ObjectStrains = new List<double>(); // Store individual strains
 
@@ -134,6 +128,9 @@ namespace osu.Game.Rulesets.Difficulty.Skills
             // These sections will not contribute to the difficulty.
             var peaks = GetCurrentStrainPeaks().Where(p => p > 0);
 
+            DifficultyFactor = peaks.Average() / peaks.Max();
+
+
             // Difficulty is the weighted sum of the highest strains from every section.
             // We're sorting from highest to lowest strain.
             foreach (double strain in peaks.OrderDescending())
@@ -144,15 +141,5 @@ namespace osu.Game.Rulesets.Difficulty.Skills
 
             return difficulty;
         }
-
-        protected void AddStrain(double currentStrain)
-        {
-            summedDifficulty += currentStrain;
-
-            if (maxDifficulty < currentStrain)
-                maxDifficulty = currentStrain;
-            AddedStrain++;
-        }
-        public override double DifficultyFactor() => summedDifficulty / AddedStrain / maxDifficulty;
     }
 }

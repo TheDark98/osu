@@ -13,13 +13,6 @@ namespace osu.Game.Rulesets.Difficulty
     {
         protected readonly Ruleset Ruleset;
 
-        protected double HardHitMuliplier; //multiplier to balance spike weigth
-        protected double EasyHitMuliplier; //multiplier to balance filler weigth
-
-
-        protected double HardLengthBonus; //Bonus PP for hard hits
-        protected double EasyLengthBonus; //Bonus PP for easy hits
-
         protected PerformanceCalculator(Ruleset ruleset)
         {
             Ruleset = ruleset;
@@ -40,16 +33,5 @@ namespace osu.Game.Rulesets.Difficulty
         /// <param name="score">The score to create the attributes for.</param>
         /// <param name="attributes">The difficulty attributes for the beatmap relating to the score.</param>
         protected abstract PerformanceAttributes CreatePerformanceAttributes(ScoreInfo score, DifficultyAttributes attributes);
-
-        protected void CalculateBaseLengthBonus(double basePP, double difficultyFactor, int totalHits)
-        {
-            basePP *= 0.0001;
-
-            double hardHits = totalHits * difficultyFactor;
-            double easyHits = totalHits - hardHits;
-
-            HardLengthBonus = basePP * HardHitMuliplier * hardHits; //Length bonus for hard hit with basePP * offset
-            EasyLengthBonus = basePP * EasyHitMuliplier * easyHits; //Length bonus for easy hit with basePP * offset
-        }
     }
 }

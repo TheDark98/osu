@@ -1,4 +1,4 @@
-﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
+﻿﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
 using System;
@@ -37,12 +37,8 @@ namespace osu.Game.Rulesets.Taiko.Difficulty.Skills
 
         protected override double StrainValueAt(DifficultyHitObject current)
         {
-            double currentStrainValue = StaminaEvaluator.EvaluateDifficultyOf(current) * skillMultiplier;
-
             currentStrain *= strainDecay(current.DeltaTime);
-            currentStrain += currentStrainValue;
-
-            AddStrain(currentStrainValue);
+            currentStrain += StaminaEvaluator.EvaluateDifficultyOf(current) * skillMultiplier;
 
             // Safely prevents previous strains from shifting as new notes are added.
             var currentObject = current as TaikoDifficultyHitObject;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
+﻿﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
 using System;
@@ -115,11 +115,6 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
             double monoStaminaRating = singleColourStamina.DifficultyValue() * stamina_skill_multiplier;
             double monoStaminaFactor = staminaRating == 0 ? 1 : Math.Pow(monoStaminaRating / staminaRating, 5);
 
-            double rhythmDifficultyFactor = rhythm.DifficultyFactor();
-            double staminaDifficultyFactor = stamina.DifficultyFactor();
-            double readingDifficultyFactor = reading.DifficultyFactor();
-            double colourDifficultyFactor = colour.DifficultyFactor();
-
             double colourDifficultStrains = colour.CountTopWeightedStrains();
             double readingDifficultStrains = reading.CountTopWeightedStrains();
             double staminaDifficultStrains = stamina.CountTopWeightedStrains();
@@ -145,13 +140,9 @@ namespace osu.Game.Rulesets.Taiko.Difficulty
                 StarRating = starRating,
                 Mods = mods,
                 RhythmDifficulty = rhythmRating,
-                RhythmDifficultyFactor = rhythmDifficultyFactor,
                 ReadingDifficulty = readingRating,
-                ReadingDifficultyFactor = readingDifficultyFactor,
                 ColourDifficulty = colourRating,
-                ColourDifficultyFactor = colourDifficultyFactor,
                 StaminaDifficulty = staminaRating,
-                StaminaDifficultyFactor = staminaDifficultyFactor,
                 MonoStaminaFactor = monoStaminaFactor,
                 ReadingTopStrains = readingDifficultStrains,
                 ColourTopStrains = colourDifficultStrains,

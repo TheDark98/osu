@@ -91,8 +91,6 @@ namespace osu.Game.Rulesets.Mania.Difficulty.Skills
             startTimes[column] = startTime;
             endTimes[column] = endTime;
 
-            AddStrain(individualStrain);
-
             // By subtracting CurrentStrain, this skill effectively only considers the maximum strain of any one hitobject within each strain section.
             return individualStrain + overallStrain - CurrentStrain;
         }

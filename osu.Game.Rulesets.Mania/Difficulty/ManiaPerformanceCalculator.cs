@@ -55,26 +55,16 @@ namespace osu.Game.Rulesets.Mania.Difficulty
             };
         }
 
-        private double hard_hit_multiplier = 1.0;
-        private double easy_hit_multiplier = 0.5;
         private double computeDifficultyValue(ManiaDifficultyAttributes attributes)
         {
-            double difficultyValue = 8.0 * Math.Pow(Math.Max(attributes.StarRating - 0.15, 0.05), 2.2); // Star rating to pp curve
+            double difficultyValue = 8.0 * Math.Pow(Math.Max(attributes.StarRating - 0.15, 0.05), 2.2) // Star rating to pp curve
+                                         * Math.Max(0, 5 * scoreAccuracy - 4) // From 80% accuracy, 1/20th of total pp is awarded per additional 1% accuracy
+                                         * (1 + 0.1 * Math.Min(1, totalHits / 1500)); // Length bonus, capped at 1500 notes
 
-            HardHitMuliplier = hard_hit_multiplier;
-            EasyHitMuliplier = easy_hit_multiplier;
-
-            CalculateBaseLengthBonus(difficultyValue, attributes.StrainFactor, totalHits);
-
-            double lengthBonus = EasyLengthBonus + HardLengthBonus;
-            lengthBonus /= 2;
-
-            difficultyValue += lengthBonus;
-
-            return difficultyValue * Math.Max(0, 5 * scoreAccuracy - 4);
+            return difficultyValue;
         }
 
-        private int totalHits => countPerfect + countOk + countGreat + countGood + countMeh + countMiss;
+        private double totalHits => countPerfect + countOk + countGreat + countGood + countMeh + countMiss;
 
         /// <summary>
         /// Accuracy used to weight judgements independently from the score's actual accuracy.
@@ -84,10 +74,7 @@ namespace osu.Game.Rulesets.Mania.Difficulty
             if (totalHits == 0)
                 return 0;
 
-            double summedHits = countPerfect * 320 + countGreat * 300 + countGood * 200 + countOk * 100 + countMeh * 50;
-            summedHits /= totalHits * 320;
-
-            return summedHits;
+            return (countPerfect * 320 + countGreat * 300 + countGood * 200 + countOk * 100 + countMeh * 50) / (totalHits * 320);
         }
     }
 }

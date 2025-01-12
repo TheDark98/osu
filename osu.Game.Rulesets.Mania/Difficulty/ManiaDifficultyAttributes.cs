@@ -19,12 +19,6 @@ namespace osu.Game.Rulesets.Mania.Difficulty
         [JsonProperty("great_hit_window")]
         public double GreatHitWindow { get; set; }
 
-        /// <summary>
-        /// Strain factor for every colomn.
-        /// </summary>
-        [JsonProperty("strain_factor")]
-        public double StrainFactor { get; set; }
-
         public override IEnumerable<(int attributeId, object value)> ToDatabaseAttributes()
         {
             foreach (var v in base.ToDatabaseAttributes())

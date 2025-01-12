@@ -45,6 +45,12 @@ namespace osu.Game.Rulesets.Difficulty
         public double StarRating { get; set; }
 
         /// <summary>
+        /// The difficulty corresponding to the rhythm skill.
+        /// </summary>
+        [JsonProperty("total_difficulty_factor")]
+        public double TotalDifficultyFactor { get; set; }
+
+        /// <summary>
         /// The maximum achievable combo.
         /// </summary>
         [JsonProperty("max_combo", Order = -2)]

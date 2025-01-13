@@ -26,7 +26,10 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
         public Speed(Mod[] mods)
             : base(mods)
         {
+            this.mods = mods;
         }
+
+        private readonly Mod[] mods;
 
         private double strainDecay(double ms) => Math.Pow(strainDecayBase, ms / 1000);
 
@@ -35,9 +38,9 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
         protected override double StrainValueAt(DifficultyHitObject current)
         {
             currentStrain *= strainDecay(((OsuDifficultyHitObject)current).StrainTime);
-            currentStrain += SpeedEvaluator.EvaluateDifficultyOf(current, Mods) * skillMultiplier;
+            currentStrain += SpeedEvaluator.EvaluateDifficultyOf(mods, current, Mods) * skillMultiplier;
 
-            currentRhythm = RhythmEvaluator.EvaluateDifficultyOf(current);
+            currentRhythm = RhythmEvaluator.EvaluateDifficultyOf(mods, current);
 
             double totalStrain = currentStrain * currentRhythm;
 

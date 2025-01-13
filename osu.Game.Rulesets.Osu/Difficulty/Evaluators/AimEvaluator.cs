@@ -4,6 +4,7 @@
 using System;
 using osu.Game.Rulesets.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Difficulty.Utils;
+using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Osu.Objects;
 
@@ -26,7 +27,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
         /// <item><description>and slider difficulty.</description></item>
         /// </list>
         /// </summary>
-        public static double EvaluateDifficultyOf(DifficultyHitObject current, bool withSliderTravelDistance)
+        public static double EvaluateDifficultyOf(Mod[] mods, DifficultyHitObject current, bool withSliderTravelDistance)
         {
             if (current.BaseObject is Spinner || current.Index <= 1 || current.Previous(0).BaseObject is Spinner)
                 return 0;

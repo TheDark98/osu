@@ -20,9 +20,11 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
             : base(mods)
         {
             this.withSliders = withSliders;
+            this.mods = mods;
         }
 
         private readonly bool withSliders;
+        private readonly Mod[] mods;
 
         private double currentStrain;
 
@@ -38,7 +40,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
         protected override double StrainValueAt(DifficultyHitObject current)
         {
             currentStrain *= strainDecay(current.DeltaTime);
-            currentStrain += AimEvaluator.EvaluateDifficultyOf(current, withSliders) * skillMultiplier;
+            currentStrain += AimEvaluator.EvaluateDifficultyOf(mods, current, withSliders) * skillMultiplier;
 
             if (current.BaseObject is Slider)
             {

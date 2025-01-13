@@ -3,6 +3,7 @@
 
 using System;
 using osu.Game.Rulesets.Difficulty.Preprocessing;
+using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Osu.Objects;
 
@@ -28,7 +29,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
         /// <item><description>and whether the hidden mod is enabled.</description></item>
         /// </list>
         /// </summary>
-        public static double EvaluateDifficultyOf(DifficultyHitObject current, bool hidden)
+        public static double EvaluateDifficultyOf(Mod[] mods, DifficultyHitObject current, bool hidden)
         {
             if (current.BaseObject is Spinner)
                 return 0;

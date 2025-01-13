@@ -2,32 +2,27 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using System;
-using System.Linq;
 using osu.Game.Rulesets.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Difficulty.Skills;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Difficulty.Evaluators;
-using osu.Game.Rulesets.Osu.Mods;
 
 namespace osu.Game.Rulesets.Osu.Difficulty.Skills
 {
     /// <summary>
-    /// Represents the skill required to memorise and hit every object in a map with the Flashlight mod enabled.
+    /// Represents the skill required to correctly aim at every object in the map with a uniform CircleSize and normalized distances.
     /// </summary>
-    public class Flashlight : StrainSkill
+    public class Aim : StrainSkill
     {
-        private readonly bool hasHiddenMod;
-
-        public Flashlight(Mod[] mods)
+        public Aim(Mod[] mods)
             : base(mods)
         {
-            hasHiddenMod = mods.Any(m => m is OsuModHidden);
         }
 
-        private double skillMultiplier => 0.05512;
-        private double strainDecayBase => 0.15;
-
         private double currentStrain;
+
+        private double skillMultiplier => 25.18;
+        private double strainDecayBase => 0.15;
 
         private double strainDecay(double ms) => Math.Pow(strainDecayBase, ms / 1000);
 
@@ -36,13 +31,9 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
         protected override double StrainValueAt(DifficultyHitObject current)
         {
             currentStrain *= strainDecay(current.DeltaTime);
-            currentStrain += FlashlightEvaluator.EvaluateDifficultyOf(mods, current, hasHiddenMod) * skillMultiplier;
+            currentStrain += AimEvaluator.EvaluateDifficultyOf(Mods, current) * skillMultiplier;
 
             return currentStrain;
         }
-
-        public override double DifficultyValue() => GetCurrentStrainPeaks().Sum();
-
-        public static double DifficultyToPerformance(double difficulty) => 25 * Math.Pow(difficulty, 2);
     }
 }

@@ -2,6 +2,7 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using System;
+using System.Collections.Generic;
 using osu.Game.Rulesets.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Difficulty.Preprocessing;
@@ -29,7 +30,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
         /// <item><description>and whether the hidden mod is enabled.</description></item>
         /// </list>
         /// </summary>
-        public static double EvaluateDifficultyOf(Mod[] mods, DifficultyHitObject current, bool hidden)
+        public static double EvaluateDifficultyOf(IReadOnlyList<Mod> mods, DifficultyHitObject current)
         {
             if (current.BaseObject is Spinner)
                 return 0;
@@ -64,12 +65,12 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
                         smallDistNerf = Math.Min(1.0, jumpDistance / 75.0);
 
                     // We also want to nerf stacks so that only the first object of the stack is accounted for.
-                    double stackNerf = Math.Min(1.0, (currentObj.LazyJumpDistance / scalingFactor) / 25.0);
+                    //double stackNerf = Math.Min(1.0, (currentObj.LazyJumpDistance / scalingFactor) / 25.0);
 
                     // Bonus based on how visible the object is.
-                    double opacityBonus = 1.0 + max_opacity_bonus * (1.0 - osuCurrent.OpacityAt(currentHitObject.StartTime, hidden));
+                    //double opacityBonus = 1.0 + max_opacity_bonus * (1.0 - osuCurrent.OpacityAt(currentHitObject.StartTime, hidden));
 
-                    result += stackNerf * opacityBonus * scalingFactor * jumpDistance / cumulativeStrainTime;
+                    //result += stackNerf * opacityBonus * scalingFactor * jumpDistance / cumulativeStrainTime;
 
                     if (currentObj.Angle != null && osuCurrent.Angle != null)
                     {
@@ -85,8 +86,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
             result = Math.Pow(smallDistNerf * result, 2.0);
 
             // Additional bonus for Hidden due to there being no approach circles.
-            if (hidden)
-                result *= 1.0 + hidden_bonus;
+            //if (hidden)
+            //    result *= 1.0 + hidden_bonus;
 
             // Nerf patterns with repeated angles.
             result *= min_angle_multiplier + (1.0 - min_angle_multiplier) / (angleRepeatCount + 1.0);

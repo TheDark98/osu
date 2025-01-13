@@ -14,14 +14,14 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
     /// <summary>
     /// Represents the skill required to press keys with regards to keeping up with the speed at which objects need to be hit.
     /// </summary>
-    public class Speed : StrainSkill
+    public class Stamina : StrainSkill
     {
         private double skillMultiplier => 1.46;
         private double strainDecayBase => 0.3;
 
         private double currentStrain;
 
-        public Speed(Mod[] mods)
+        public Stamina(Mod[] mods)
             : base(mods)
         {
         }
@@ -33,7 +33,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
         protected override double StrainValueAt(DifficultyHitObject current)
         {
             currentStrain *= strainDecay(((OsuDifficultyHitObject)current).StrainTime);
-            currentStrain += SpeedEvaluator.EvaluateDifficultyOf(Mods, current) * skillMultiplier;
+            currentStrain += StaminaEvaluator.EvaluateDifficultyOf(Mods, current) * skillMultiplier;
 
             return currentStrain;
         }

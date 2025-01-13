@@ -22,7 +22,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
         /// <summary>
         /// Calculates a rhythm multiplier for the difficulty of the tap associated with historic data of the current <see cref="OsuDifficultyHitObject"/>.
         /// </summary>
-        public static double EvaluateDifficultyOf(Mod[] mods, DifficultyHitObject current)
+        public static double EvaluateDifficultyOf(IReadOnlyList<Mod> mods, DifficultyHitObject current)
         {
             if (current.BaseObject is Spinner)
                 return 0;

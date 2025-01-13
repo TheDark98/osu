@@ -29,12 +29,12 @@ namespace osu.Game.Rulesets.Osu.Difficulty
         /// <summary>
         /// The difficulty corresponding to the speed skill.
         /// </summary>
-        [JsonProperty("speed_difficulty")]
-        public double SpeedDifficulty { get; set; }
+        [JsonProperty("tapping_difficulty")]
+        public double TappingDifficulty { get; set; }
 
         /// <summary>
         /// The number of clickable objects weighted by difficulty.
-        /// Related to <see cref="SpeedDifficulty"/>
+        /// Related to <see cref="TappingDifficulty"/>
         /// </summary>
         [JsonProperty("speed_note_count")]
         public double SpeedNoteCount { get; set; }
@@ -42,8 +42,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty
         /// <summary>
         /// The difficulty corresponding to the flashlight skill.
         /// </summary>
-        [JsonProperty("flashlight_difficulty")]
-        public double FlashlightDifficulty { get; set; }
+        [JsonProperty("reading_difficulty")]
+        public double ReadingDifficulty { get; set; }
 
         /// <summary>
         /// Describes how much of <see cref="AimDifficulty"/> is contributed to by hitcircles or sliders.
@@ -115,14 +115,14 @@ namespace osu.Game.Rulesets.Osu.Difficulty
                 yield return v;
 
             yield return (ATTRIB_ID_AIM, AimDifficulty);
-            yield return (ATTRIB_ID_SPEED, SpeedDifficulty);
+            yield return (ATTRIB_ID_SPEED, TappingDifficulty);
             yield return (ATTRIB_ID_OVERALL_DIFFICULTY, OverallDifficulty);
             yield return (ATTRIB_ID_APPROACH_RATE, ApproachRate);
             yield return (ATTRIB_ID_DIFFICULTY, StarRating);
             yield return (ATTRIB_ID_GREAT_HIT_WINDOW, GreatHitWindow);
 
             if (ShouldSerializeFlashlightDifficulty())
-                yield return (ATTRIB_ID_FLASHLIGHT, FlashlightDifficulty);
+                yield return (ATTRIB_ID_FLASHLIGHT, ReadingDifficulty);
 
             yield return (ATTRIB_ID_SLIDER_FACTOR, SliderFactor);
 
@@ -140,12 +140,12 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             base.FromDatabaseAttributes(values, onlineInfo);
 
             AimDifficulty = values[ATTRIB_ID_AIM];
-            SpeedDifficulty = values[ATTRIB_ID_SPEED];
+            TappingDifficulty = values[ATTRIB_ID_SPEED];
             OverallDifficulty = values[ATTRIB_ID_OVERALL_DIFFICULTY];
             ApproachRate = values[ATTRIB_ID_APPROACH_RATE];
             StarRating = values[ATTRIB_ID_DIFFICULTY];
             GreatHitWindow = values[ATTRIB_ID_GREAT_HIT_WINDOW];
-            FlashlightDifficulty = values.GetValueOrDefault(ATTRIB_ID_FLASHLIGHT);
+            ReadingDifficulty = values.GetValueOrDefault(ATTRIB_ID_FLASHLIGHT);
             SliderFactor = values[ATTRIB_ID_SLIDER_FACTOR];
             AimDifficultStrainCount = values[ATTRIB_ID_AIM_DIFFICULT_STRAIN_COUNT];
             SpeedDifficultStrainCount = values[ATTRIB_ID_SPEED_DIFFICULT_STRAIN_COUNT];

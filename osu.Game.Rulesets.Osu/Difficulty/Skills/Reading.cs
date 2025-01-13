@@ -2,10 +2,12 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using System;
+using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Difficulty.Skills;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Difficulty.Evaluators;
+using osuTK;
 
 namespace osu.Game.Rulesets.Osu.Difficulty.Skills
 {
@@ -16,15 +18,17 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
     {
         private readonly bool hasHiddenMod;
 
-        public Reading(Mod[] mods)
+        public Reading(Mod[] mods, IBeatmap beatmap)
             : base(mods)
         {
+            this.beatmap = beatmap;
         }
 
-        private double skillMultiplier => 0.05512;
+        private double skillMultiplier => 1.0;
         private double strainDecayBase => 0.15;
 
         private double currentStrain;
+        private IBeatmap beatmap;
 
         private double strainDecay(double ms) => Math.Pow(strainDecayBase, ms / 1000);
 
@@ -33,7 +37,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
         protected override double StrainValueAt(DifficultyHitObject current)
         {
             currentStrain *= strainDecay(current.DeltaTime);
-            currentStrain += ReadingEvaluator.EvaluateDifficultyOf(Mods, current) * skillMultiplier;
+            currentStrain += ReadingEvaluator.EvaluateDifficultyOf(Mods, current, beatmap) * skillMultiplier;
 
             return currentStrain;
         }

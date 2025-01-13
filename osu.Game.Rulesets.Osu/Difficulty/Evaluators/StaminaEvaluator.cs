@@ -67,7 +67,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
             double difficulty = (1 + speedBonus + distanceBonus) * 1000 / strainTime;
 
             // Apply penalty if there's doubletappable doubles
-            return difficulty * doubletapness;
+            return 0;
         }
     }
 }

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using osu.Game.Rulesets.Difficulty;
-using osu.Game.Rulesets.Osu.Difficulty.Skills;
 using osu.Game.Rulesets.Osu.Mods;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Scoring;
@@ -116,24 +115,24 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             speedDeviation = calculateSpeedDeviation(osuAttributes);
 
             double aimValue = computeAimValue(score, osuAttributes);
-            double speedValue = computeSpeedValue(score, osuAttributes);
+            double tappingValue = computeSpeedValue(score, osuAttributes);
             double accuracyValue = computeAccuracyValue(score, osuAttributes);
-            double flashlightValue = computeFlashlightValue(score, osuAttributes);
+            double readingValue = computeReadingValue(score, osuAttributes);
 
             double totalValue =
                 Math.Pow(
                     Math.Pow(aimValue, 1.1) +
-                    Math.Pow(speedValue, 1.1) +
+                    Math.Pow(tappingValue, 1.1) +
                     Math.Pow(accuracyValue, 1.1) +
-                    Math.Pow(flashlightValue, 1.1), 1.0 / 1.1
+                    Math.Pow(readingValue, 1.1), 1.0 / 1.1
                 ) * multiplier;
 
             return new OsuPerformanceAttributes
             {
                 Aim = aimValue,
-                Speed = speedValue,
+                Tapping = tappingValue,
+                Reading = readingValue,
                 Accuracy = accuracyValue,
-                Flashlight = flashlightValue,
                 EffectiveMissCount = effectiveMissCount,
                 SpeedDeviation = speedDeviation,
                 Total = totalValue
@@ -206,7 +205,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             if (score.Mods.Any(h => h is OsuModRelax) || speedDeviation == null)
                 return 0.0;
 
-            double speedValue = attributes.SpeedDifficulty;
+            double speedValue = attributes.TappingDifficulty;
 
             double lengthBonus = 0.95 + 0.4 * Math.Min(1.0, totalHits / 2000.0) +
                                  (totalHits > 2000 ? Math.Log10(totalHits / 2000.0) * 0.5 : 0.0);
@@ -290,30 +289,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             return accuracyValue;
         }
 
-        private double computeFlashlightValue(ScoreInfo score, OsuDifficultyAttributes attributes)
-        {
-            if (!score.Mods.Any(h => h is OsuModFlashlight))
-                return 0.0;
-
-            double flashlightValue = attributes.FlashlightDifficulty;
-
-            // Penalize misses by assessing # of misses relative to the total # of objects. Default a 3% reduction for any # of misses.
-            if (effectiveMissCount > 0)
-                flashlightValue *= 0.97 * Math.Pow(1 - Math.Pow(effectiveMissCount / totalHits, 0.775), Math.Pow(effectiveMissCount, .875));
-
-            flashlightValue *= getComboScalingFactor(attributes);
-
-            // Account for shorter maps having a higher ratio of 0 combo/100 combo flashlight radius.
-            flashlightValue *= 0.7 + 0.1 * Math.Min(1.0, totalHits / 200.0) +
-                               (totalHits > 200 ? 0.2 * Math.Min(1.0, (totalHits - 200) / 200.0) : 0.0);
-
-            // Scale the flashlight value with accuracy _slightly_.
-            flashlightValue *= 0.5 + accuracy / 2.0;
-            // It is important to also consider accuracy difficulty when doing that.
-            flashlightValue *= 0.98 + Math.Pow(Math.Max(0, attributes.OverallDifficulty), 2) / 2500;
-
-            return flashlightValue;
-        }
+        private double computeReadingValue(ScoreInfo score, OsuDifficultyAttributes attributes) => attributes.ReadingDifficulty;
 
         /// <summary>
         /// Estimates player's deviation on speed notes using <see cref="calculateDeviation"/>, assuming worst-case.
@@ -398,7 +374,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             if (speedDeviation == null)
                 return 0;
 
-            double speedValue = attributes.SpeedDifficulty;
+            double speedValue = attributes.TappingDifficulty;
 
             // Decides a point where the PP value achieved compared to the speed deviation is assumed to be tapped improperly. Any PP above this point is considered "excess" speed difficulty.
             // This is used to cause PP above the cutoff to scale logarithmically towards the original speed value thus nerfing the value.

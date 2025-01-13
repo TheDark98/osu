@@ -3,9 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Linq;
+using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Difficulty.Preprocessing;
+using osu.Game.Rulesets.Osu.Mods;
 using osu.Game.Rulesets.Osu.Objects;
 
 namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
@@ -20,6 +24,11 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
 
         private const double min_angle_multiplier = 0.2;
 
+        private static double density;
+        private static double cloackRate;
+        private static double approachRate;
+        private static double preempt;
+
         /// <summary>
         /// Evaluates the difficulty of memorising and hitting an object, based on:
         /// <list type="bullet">
@@ -30,89 +39,79 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
         /// <item><description>and whether the hidden mod is enabled.</description></item>
         /// </list>
         /// </summary>
-        public static double EvaluateDifficultyOf(IReadOnlyList<Mod> mods, DifficultyHitObject current)
+        public static double EvaluateDifficultyOf(IReadOnlyList<Mod> mods, DifficultyHitObject current, IBeatmap beatmap)
         {
-            if (current.BaseObject is Spinner)
+            if (current.BaseObject is Spinner || current.Index < 2 || current.LastObject is Spinner)
                 return 0;
 
             var osuCurrent = (OsuDifficultyHitObject)current;
-            var osuHitObject = (OsuHitObject)(osuCurrent.BaseObject);
 
-            double scalingFactor = 52.0 / osuHitObject.Radius;
-            double smallDistNerf = 1.0;
-            double cumulativeStrainTime = 0.0;
+            bool isHidden = mods.Any(h => h is OsuModHidden);
 
-            double result = 0.0;
+            approachRate = beatmap.Difficulty.ApproachRate;
 
-            OsuDifficultyHitObject lastObj = osuCurrent;
+            //CloakRate is influenced only by DT/HT; NM remains fixed at 1.0.
+            cloackRate = 1.0;
 
-            double angleRepeatCount = 0.0;
-
-            // This is iterating backwards in time from the current object.
-            for (int i = 0; i < Math.Min(current.Index, 10); i++)
+            if (mods.Any(h => h is OsuModDoubleTime))
             {
-                var currentObj = (OsuDifficultyHitObject)current.Previous(i);
-                var currentHitObject = (OsuHitObject)(currentObj.BaseObject);
-
-                if (!(currentObj.BaseObject is Spinner))
-                {
-                    double jumpDistance = (osuHitObject.StackedPosition - currentHitObject.StackedEndPosition).Length;
-
-                    cumulativeStrainTime += lastObj.StrainTime;
-
-                    // We want to nerf objects that can be easily seen within the Flashlight circle radius.
-                    if (i == 0)
-                        smallDistNerf = Math.Min(1.0, jumpDistance / 75.0);
-
-                    // We also want to nerf stacks so that only the first object of the stack is accounted for.
-                    //double stackNerf = Math.Min(1.0, (currentObj.LazyJumpDistance / scalingFactor) / 25.0);
-
-                    // Bonus based on how visible the object is.
-                    //double opacityBonus = 1.0 + max_opacity_bonus * (1.0 - osuCurrent.OpacityAt(currentHitObject.StartTime, hidden));
-
-                    //result += stackNerf * opacityBonus * scalingFactor * jumpDistance / cumulativeStrainTime;
-
-                    if (currentObj.Angle != null && osuCurrent.Angle != null)
-                    {
-                        // Objects further back in time should count less for the nerf.
-                        if (Math.Abs(currentObj.Angle.Value - osuCurrent.Angle.Value) < 0.02)
-                            angleRepeatCount += Math.Max(1.0 - 0.1 * i, 0.0);
-                    }
-                }
-
-                lastObj = currentObj;
+                OsuModDoubleTime doubleTime = (OsuModDoubleTime)mods.First(h => h is OsuModDoubleTime);
+                cloackRate = doubleTime.SpeedChange.Value;
+            }
+            else if (mods.Any(h => h is OsuModNightcore))
+            {
+                OsuModNightcore nightcore = (OsuModNightcore)mods.First(h => h is OsuModNightcore);
+                cloackRate = nightcore.SpeedChange.Value;
+            }
+            else if (mods.Any(h => h is OsuModHalfTime))
+            {
+                OsuModHalfTime halfTime = (OsuModHalfTime)mods.First(h => h is OsuModHalfTime);
+                cloackRate = halfTime.SpeedChange.Value;
+            }
+            else if (mods.Any(h => h is OsuModDaycore))
+            {
+                OsuModDaycore daycore = (OsuModDaycore)mods.First(h => h is OsuModDaycore);
+                cloackRate = daycore.SpeedChange.Value;
             }
 
-            result = Math.Pow(smallDistNerf * result, 2.0);
+            preempt = IBeatmapDifficultyInfo.DifficultyRange(, 1800, 1200, 450) / cloackRate;
 
-            // Additional bonus for Hidden due to there being no approach circles.
-            //if (hidden)
-            //    result *= 1.0 + hidden_bonus;
+            //Density is calculated as approach rate (ms) / current strain.
+            density = preempt / osuCurrent.StrainTime;
 
-            // Nerf patterns with repeated angles.
-            result *= min_angle_multiplier + (1.0 - min_angle_multiplier) / (angleRepeatCount + 1.0);
+            double overlapp = processOverlapp(osuCurrent);
 
-            double sliderBonus = 0.0;
+            double approachRateCurve;
+            if (isHidden)
+                approachRateCurve = 0.15 * (13.0 - approachRate);
+            else
+                approachRateCurve = approachRate < 10.33 ? 0.05 * (13.0 - approachRate) : 0.3 * (approachRate - 10.33);
 
-            if (osuCurrent.BaseObject is Slider osuSlider)
-            {
-                // Invert the scaling factor to determine the true travel distance independent of circle size.
-                double pixelTravelDistance = osuSlider.LazyTravelDistance / scalingFactor;
+            double visualDensity = (1.0 + approachRateCurve) * (1.0 + density) * (1.0 + overlapp);
 
-                // Reward sliders based on velocity.
-                sliderBonus = Math.Pow(Math.Max(0.0, pixelTravelDistance / osuCurrent.TravelTime - min_velocity), 0.5);
-
-                // Longer sliders require more memorisation.
-                sliderBonus *= pixelTravelDistance;
-
-                // Nerf sliders with repeats, as less memorisation is required.
-                if (osuSlider.RepeatCount > 0)
-                    sliderBonus /= (osuSlider.RepeatCount + 1);
-            }
-
-            result += sliderBonus * slider_multiplier;
-
-            return result;
+            return visualDensity;
         }
+
+        private static double processOverlapp(DifficultyHitObject current)
+        {
+            if (current.Index < 4)
+                return 0.0;
+
+            List<OsuDifficultyHitObject> obj = [(OsuDifficultyHitObject)current, (OsuDifficultyHitObject)current.Previous(0), (OsuDifficultyHitObject)current.Previous(1), (OsuDifficultyHitObject)current.Previous(2)];
+
+            double[] strainsTimes = [obj[0].StrainTime, obj[1].StrainTime, obj[2].StrainTime, obj[3].StrainTime];
+
+            double?[] angleValue = [obj[0].Angle.Value, obj[1].Angle.Value, obj[2].Angle.Value, obj[3].Angle.Value];
+
+            if (strainsTimes.Average() != strainsTimes[0])
+                return 0.0;
+
+            double[] densitys = [preempt / strainsTimes[0], preempt / strainsTimes[1], preempt / strainsTimes[1], preempt / strainsTimes[1]];
+
+            double[] lazyJumps = [obj[0].StrainTime, obj[1].StrainTime, obj[2].StrainTime, obj[3].StrainTime];
+
+            return 0.0;
+        }
+
     }
 }

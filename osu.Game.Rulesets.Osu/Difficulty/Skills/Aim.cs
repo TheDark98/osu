@@ -2,6 +2,7 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using System;
+using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Difficulty.Skills;
 using osu.Game.Rulesets.Mods;
@@ -14,7 +15,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
     /// </summary>
     public class Aim : StrainSkill
     {
-        public Aim(Mod[] mods)
+        public Aim(Mod[] mods, IBeatmap beatmap)
             : base(mods)
         {
         }

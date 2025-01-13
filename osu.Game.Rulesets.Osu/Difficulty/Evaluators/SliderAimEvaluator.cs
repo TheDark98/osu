@@ -11,7 +11,7 @@ using osu.Game.Rulesets.Osu.Objects;
 
 namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
 {
-    public static class AimEvaluator
+    public static class SliderAimEvaluator
     {
         private const double wide_angle_multiplier = 1.5;
         private const double acute_angle_multiplier = 2.6;

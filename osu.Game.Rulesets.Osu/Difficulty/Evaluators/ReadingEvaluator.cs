@@ -10,7 +10,7 @@ using osu.Game.Rulesets.Osu.Objects;
 
 namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
 {
-    public static class FlashlightEvaluator
+    public static class ReadingEvaluator
     {
         private const double max_opacity_bonus = 0.4;
         private const double hidden_bonus = 0.2;

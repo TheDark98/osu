@@ -12,9 +12,9 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
     /// <summary>
     /// Represents the skill required to correctly aim at every object in the map with a uniform CircleSize and normalized distances.
     /// </summary>
-    public class Aim : StrainSkill
+    public class SliderAim : StrainSkill
     {
-        public Aim(Mod[] mods)
+        public SliderAim(Mod[] mods)
             : base(mods)
         {
         }
@@ -31,7 +31,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
         protected override double StrainValueAt(DifficultyHitObject current)
         {
             currentStrain *= strainDecay(current.DeltaTime);
-            currentStrain += AimEvaluator.EvaluateDifficultyOf(Mods, current) * skillMultiplier;
+            currentStrain += SliderAimEvaluator.EvaluateDifficultyOf(Mods, current) * skillMultiplier;
 
             return currentStrain;
         }

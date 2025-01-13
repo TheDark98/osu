@@ -2,7 +2,6 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using System;
-using System.Linq;
 using osu.Game.Rulesets.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Difficulty.Skills;
 using osu.Game.Rulesets.Mods;
@@ -13,11 +12,11 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
     /// <summary>
     /// Represents the skill required to memorise and hit every object in a map with the Flashlight mod enabled.
     /// </summary>
-    public class Flashlight : StrainSkill
+    public class Reading : StrainSkill
     {
         private readonly bool hasHiddenMod;
 
-        public Flashlight(Mod[] mods)
+        public Reading(Mod[] mods)
             : base(mods)
         {
         }
@@ -34,7 +33,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
         protected override double StrainValueAt(DifficultyHitObject current)
         {
             currentStrain *= strainDecay(current.DeltaTime);
-            currentStrain += FlashlightEvaluator.EvaluateDifficultyOf(Mods, current) * skillMultiplier;
+            currentStrain += ReadingEvaluator.EvaluateDifficultyOf(Mods, current) * skillMultiplier;
 
             return currentStrain;
         }

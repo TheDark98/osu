@@ -46,53 +46,44 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
 
             var osuCurrent = (OsuDifficultyHitObject)current;
 
-            bool isHidden = mods.Any(h => h is OsuModHidden);
+            bool isHidden = mods.OfType<OsuModHidden>().Any();
 
             approachRate = beatmap.Difficulty.ApproachRate;
 
             //CloakRate is influenced only by DT/HT; NM remains fixed at 1.0.
             cloackRate = 1.0;
 
-            if (mods.Any(h => h is OsuModDoubleTime))
-            {
-                OsuModDoubleTime doubleTime = (OsuModDoubleTime)mods.First(h => h is OsuModDoubleTime);
-                cloackRate = doubleTime.SpeedChange.Value;
-            }
-            else if (mods.Any(h => h is OsuModNightcore))
-            {
-                OsuModNightcore nightcore = (OsuModNightcore)mods.First(h => h is OsuModNightcore);
-                cloackRate = nightcore.SpeedChange.Value;
-            }
-            else if (mods.Any(h => h is OsuModHalfTime))
-            {
-                OsuModHalfTime halfTime = (OsuModHalfTime)mods.First(h => h is OsuModHalfTime);
-                cloackRate = halfTime.SpeedChange.Value;
-            }
-            else if (mods.Any(h => h is OsuModDaycore))
-            {
-                OsuModDaycore daycore = (OsuModDaycore)mods.First(h => h is OsuModDaycore);
-                cloackRate = daycore.SpeedChange.Value;
-            }
+            if (mods.OfType<OsuModDoubleTime>().Any())
+                cloackRate = mods.OfType<OsuModDoubleTime>().First().SpeedChange.Value;
+            else if (mods.OfType<OsuModNightcore>().Any())
+                cloackRate = mods.OfType<OsuModNightcore>().First().SpeedChange.Value;
+            else if (mods.OfType<OsuModHalfTime>().Any())
+                cloackRate = mods.OfType<OsuModHalfTime>().First().SpeedChange.Value;
+            else if (mods.OfType<OsuModDaycore>().Any())
+                cloackRate = mods.OfType<OsuModDaycore>().First().SpeedChange.Value;
 
-            preempt = IBeatmapDifficultyInfo.DifficultyRange(, 1800, 1200, 450) / cloackRate;
+            preempt = IBeatmapDifficultyInfo.DifficultyRange(approachRate, 1800, 1200, 450) / cloackRate;
 
             //Density is calculated as approach rate (ms) / current strain.
             density = preempt / osuCurrent.StrainTime;
 
-            double overlapp = processOverlapp(osuCurrent);
+            Console.WriteLine(density);
+
+            //Process the difficulty of overlap
+            double overlap = processOverlap(osuCurrent);
 
             double approachRateCurve;
             if (isHidden)
                 approachRateCurve = 0.15 * (13.0 - approachRate);
             else
                 approachRateCurve = approachRate < 10.33 ? 0.05 * (13.0 - approachRate) : 0.3 * (approachRate - 10.33);
-
-            double visualDensity = (1.0 + approachRateCurve) * (1.0 + density) * (1.0 + overlapp);
+            //Visual density represent the difficulty to read an object
+            double visualDensity = (1.0 + approachRateCurve) * (1.0 + density) * (1.0 + overlap);
 
             return visualDensity;
         }
 
-        private static double processOverlapp(DifficultyHitObject current)
+        private static double processOverlap(DifficultyHitObject current)
         {
             if (current.Index < 4)
                 return 0.0;

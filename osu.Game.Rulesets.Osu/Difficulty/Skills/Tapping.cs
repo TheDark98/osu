@@ -14,14 +14,14 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
     /// <summary>
     /// Represents the skill required to press keys with regards to keeping up with the speed at which objects need to be hit.
     /// </summary>
-    public class Speed : StrainSkill
+    public class Tapping : StrainSkill
     {
         private double skillMultiplier => 1.46;
         private double strainDecayBase => 0.3;
 
         private double currentStrain;
 
-        public Speed(Mod[] mods)
+        public Tapping(Mod[] mods)
             : base(mods)
         {
         }

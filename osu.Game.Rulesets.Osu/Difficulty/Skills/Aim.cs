@@ -15,7 +15,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
     /// </summary>
     public class Aim : StrainSkill
     {
-        public Aim(Mod[] mods, IBeatmap beatmap)
+        public Aim(Mod[] mods)
             : base(mods)
         {
         }

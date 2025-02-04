@@ -39,7 +39,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
         /// <item><description>and whether the hidden mod is enabled.</description></item>
         /// </list>
         /// </summary>
-        public static double EvaluateDifficultyOf(IReadOnlyList<Mod> mods, DifficultyHitObject current, IBeatmap beatmap)
+        public static double EvaluateDifficultyOf(IReadOnlyList<Mod> mods, DifficultyHitObject current)
         {
             if (current.BaseObject is Spinner || current.Index < 2 || current.LastObject is Spinner)
                 return 0;
@@ -48,7 +48,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
 
             bool isHidden = mods.OfType<OsuModHidden>().Any();
 
-            approachRate = beatmap.Difficulty.ApproachRate;
+            approachRate = osuCurrent.ApproachRate;
 
             //CloakRate is influenced only by DT/HT; NM remains fixed at 1.0.
             cloackRate = 1.0;

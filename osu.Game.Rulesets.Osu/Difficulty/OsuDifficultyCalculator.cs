@@ -36,7 +36,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             if (beatmap.HitObjects.Count is 0)
                 return new OsuDifficultyAttributes { Mods = mods };
             Aim aim = (Aim)skills.First(x => x is Aim);
-            Speed speed = (Speed)skills.First(x => x is Speed);
+            Tapping speed = (Tapping)skills.First(x => x is Tapping);
             Reading reading = (Reading)skills.First(x => x is Reading);
 
             double aimRating = Math.Sqrt(aim.DifficultyValue()) * difficulty_multiplier;
@@ -131,7 +131,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             for (int i = 1; i < beatmap.HitObjects.Count; i++)
             {
                 var lastLast = i > 1 ? beatmap.HitObjects[i - 2] : null;
-                objects.Add(new OsuDifficultyHitObject(beatmap.HitObjects[i], beatmap.HitObjects[i - 1], lastLast, clockRate, objects, objects.Count));
+                objects.Add(new OsuDifficultyHitObject(beatmap.HitObjects[i], beatmap.HitObjects[i - 1], lastLast, clockRate, objects, objects.Count, beatmap.Difficulty.ApproachRate));
             }
 
             return objects;
@@ -141,12 +141,10 @@ namespace osu.Game.Rulesets.Osu.Difficulty
         {
             var skills = new List<Skill>
             {
-                new Aim(mods, beatmap),
-                new SliderAim(mods),
-                new Speed(mods),
-                new Stamina(mods),
+                new Aim(mods),
+                new Tapping(mods),
                 new Rhythm(mods),
-                new Reading(mods, beatmap)
+                new Reading(mods)
             };
 
             return skills.ToArray();

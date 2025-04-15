@@ -109,17 +109,21 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
 
 
                     // Apply nerf for jumps that are super comfortable in distance
-                    aimSlopNerf = DifficultyCalculationUtils.Smootherstep(osuCurrObj.LazyJumpDistance, 0, diameter)
+                    aimSlopNerf = angleBonus
+                                  * DifficultyCalculationUtils.Smootherstep(osuCurrObj.LazyJumpDistance, 0, diameter)
                                   * DifficultyCalculationUtils.Smootherstep(currAngle, double.DegreesToRadians(50), double.DegreesToRadians(10))
                                   * DifficultyCalculationUtils.Smootherstep(currAngle, double.DegreesToRadians(10), double.DegreesToRadians(50))
+                                  * Math.Pow(DifficultyCalculationUtils.ReverseLerp(osuCurrObj.LazyJumpDistance, diameter, diameter * 1.5), 1.8)
                                   * DifficultyCalculationUtils.Smootherstep(lastAngle, double.DegreesToRadians(50), double.DegreesToRadians(10))
-                                  * DifficultyCalculationUtils.Smootherstep(lastAngle, double.DegreesToRadians(10), double.DegreesToRadians(50));
+                                  * DifficultyCalculationUtils.Smootherstep(lastAngle, double.DegreesToRadians(10), double.DegreesToRadians(50))
+                                  * Math.Pow(DifficultyCalculationUtils.ReverseLerp(osuLastObj.LazyJumpDistance, diameter, diameter * 1.5), 1.8);
 
                     if (osuLastLastObj.Angle != null)
                     {
                         double lastLastAngle = osuLastLastObj.Angle.Value;
                         aimSlopNerf *= DifficultyCalculationUtils.Smootherstep(lastLastAngle, double.DegreesToRadians(50), double.DegreesToRadians(10))
-                                     * DifficultyCalculationUtils.Smootherstep(lastLastAngle, double.DegreesToRadians(10), double.DegreesToRadians(50));
+                                     * DifficultyCalculationUtils.Smootherstep(lastLastAngle, double.DegreesToRadians(10), double.DegreesToRadians(50))
+                                     * Math.Pow(DifficultyCalculationUtils.ReverseLerp(osuLastLastObj.LazyJumpDistance, diameter, diameter * 1.5), 1.8);
                     }
                 }
             }

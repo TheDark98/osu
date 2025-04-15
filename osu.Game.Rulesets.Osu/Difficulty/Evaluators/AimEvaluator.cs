@@ -110,18 +110,18 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
 
                     // Apply nerf for jumps that are super comfortable in distance
                     aimSlopNerf = DifficultyCalculationUtils.Smootherstep(osuCurrObj.LazyJumpDistance, 0, diameter)
-                                  * DifficultyCalculationUtils.Smootherstep(currAngle, double.DegreesToRadians(40), double.DegreesToRadians(20))
-                                  * DifficultyCalculationUtils.Smootherstep(currAngle, double.DegreesToRadians(20), double.DegreesToRadians(40))
-                                  * DifficultyCalculationUtils.Smootherstep(lastAngle, double.DegreesToRadians(40), double.DegreesToRadians(20))
-                                  * DifficultyCalculationUtils.Smootherstep(currAngle, double.DegreesToRadians(20), double.DegreesToRadians(40));
+                                  * DifficultyCalculationUtils.Smootherstep(currAngle, double.DegreesToRadians(50), double.DegreesToRadians(15))
+                                  * DifficultyCalculationUtils.Smootherstep(currAngle, double.DegreesToRadians(15), double.DegreesToRadians(50))
+                                  * DifficultyCalculationUtils.Smootherstep(lastAngle, double.DegreesToRadians(50), double.DegreesToRadians(15))
+                                  * DifficultyCalculationUtils.Smootherstep(lastAngle, double.DegreesToRadians(15), double.DegreesToRadians(50));
 
                     double lastLastAngle = 0;
                     if (osuLastLastObj.Angle != null)
                         lastLastAngle = osuLastLastObj.Angle.Value;
 
                     if (lastLastAngle > 20 && lastLastAngle < 40)
-                        aimSlopNerf *= DifficultyCalculationUtils.Smootherstep(lastLastAngle, double.DegreesToRadians(40), double.DegreesToRadians(20))
-                                     * DifficultyCalculationUtils.Smootherstep(currAngle, double.DegreesToRadians(20), double.DegreesToRadians(40));
+                        aimSlopNerf *= DifficultyCalculationUtils.Smootherstep(lastLastAngle, double.DegreesToRadians(50), double.DegreesToRadians(15))
+                                     * DifficultyCalculationUtils.Smootherstep(lastLastAngle, double.DegreesToRadians(15), double.DegreesToRadians(50));
                 }
             }
 

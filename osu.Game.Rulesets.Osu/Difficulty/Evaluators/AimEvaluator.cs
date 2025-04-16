@@ -17,6 +17,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
         private const double velocity_change_multiplier = 0.75;
         private const double wiggle_multiplier = 1.02;
 
+        private const double aim_control_multiplier = 10.0;
+
         /// <summary>
         /// Evaluates the difficulty of aiming the current object, based on:
         /// <list type="bullet">
@@ -66,6 +68,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
             double sliderBonus = 0;
             double velocityChangeBonus = 0;
             double wiggleBonus = 0;
+            double aimControlBonus = 0;
 
             double aimStrain = currVelocity; // Start strain with regular velocity.
 
@@ -103,6 +106,15 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
                                   * DifficultyCalculationUtils.Smootherstep(osuLastObj.LazyJumpDistance, radius, diameter)
                                   * Math.Pow(DifficultyCalculationUtils.ReverseLerp(osuLastObj.LazyJumpDistance, diameter * 3, diameter), 1.8)
                                   * DifficultyCalculationUtils.Smootherstep(lastAngle, double.DegreesToRadians(110), double.DegreesToRadians(60));
+
+
+                    aimControlBonus = angleBonus
+                                          * DifficultyCalculationUtils.Smootherstep(Math.Abs(currAngle - lastAngle), double.DegreesToRadians(50), double.DegreesToRadians(180))
+                                          * DifficultyCalculationUtils.Smootherstep(Math.Abs(osuCurrObj.LazyJumpDistance - osuLastObj.LazyJumpDistance), diameter, diameter * 3)
+                                          * Math.Pow(DifficultyCalculationUtils.Smootherstep(Math.Max(osuCurrObj.LazyJumpDistance, osuLastObj.LazyJumpDistance), radius, diameter), 1.8)
+                                          * DifficultyCalculationUtils.Smootherstep(DifficultyCalculationUtils.MillisecondsToBPM(osuCurrObj.StrainTime, 4), 90, 220);
+
+                    Console.WriteLine($"aim control bonus: {aimControlBonus}");
                 }
             }
 
@@ -131,6 +143,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
             }
 
             aimStrain += wiggleBonus * wiggle_multiplier;
+
+            aimStrain += aimControlBonus * aim_control_multiplier;
 
             // Add in acute angle bonus or wide angle bonus + velocity change bonus, whichever is larger.
             aimStrain += Math.Max(acuteAngleBonus * acute_angle_multiplier, wideAngleBonus * wide_angle_multiplier + velocityChangeBonus * velocity_change_multiplier);

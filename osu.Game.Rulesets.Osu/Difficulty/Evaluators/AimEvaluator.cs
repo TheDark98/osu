@@ -16,8 +16,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
         private const double slider_multiplier = 1.35;
         private const double velocity_change_multiplier = 0.75;
         private const double wiggle_multiplier = 1.02;
-
         private const double aim_control_multiplier = 10.0;
+        private const double aim_slop_nerf_multiplier = 15.0;
 
         /// <summary>
         /// Evaluates the difficulty of aiming the current object, based on:
@@ -69,6 +69,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
             double velocityChangeBonus = 0;
             double wiggleBonus = 0;
             double aimControlBonus = 0;
+            double aimSlopNerf = 0;
 
             double aimStrain = currVelocity; // Start strain with regular velocity.
 
@@ -114,7 +115,23 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
                                           * Math.Pow(DifficultyCalculationUtils.Smootherstep(Math.Max(osuCurrObj.LazyJumpDistance, osuLastObj.LazyJumpDistance), radius, diameter), 1.8)
                                           * DifficultyCalculationUtils.Smootherstep(DifficultyCalculationUtils.MillisecondsToBPM(osuCurrObj.StrainTime, 4), 90, 220);
 
-                    Console.WriteLine($"aim control bonus: {aimControlBonus}");
+                    // Apply nerf for jumps that are super comfortable in distance
+                    aimSlopNerf = angleBonus
+                                  * DifficultyCalculationUtils.Smootherstep(osuCurrObj.LazyJumpDistance, 0, diameter)
+                                  * DifficultyCalculationUtils.Smootherstep(currAngle, double.DegreesToRadians(60), double.DegreesToRadians(10))
+                                  * DifficultyCalculationUtils.Smootherstep(currAngle, double.DegreesToRadians(10), double.DegreesToRadians(60))
+                                  * Math.Pow(DifficultyCalculationUtils.ReverseLerp(osuCurrObj.LazyJumpDistance, diameter, diameter * 1.5), 1.8)
+                                  * DifficultyCalculationUtils.Smootherstep(lastAngle, double.DegreesToRadians(60), double.DegreesToRadians(10))
+                                  * DifficultyCalculationUtils.Smootherstep(lastAngle, double.DegreesToRadians(10), double.DegreesToRadians(60))
+                                  * Math.Pow(DifficultyCalculationUtils.ReverseLerp(osuLastObj.LazyJumpDistance, diameter, diameter * 1.5), 1.8);
+
+                    if (osuLastLastObj.Angle != null)
+                    {
+                        double lastLastAngle = osuLastLastObj.Angle.Value;
+                        aimSlopNerf *= DifficultyCalculationUtils.Smootherstep(lastLastAngle, double.DegreesToRadians(60), double.DegreesToRadians(10))
+                                     * DifficultyCalculationUtils.Smootherstep(lastLastAngle, double.DegreesToRadians(10), double.DegreesToRadians(60))
+                                     * Math.Pow(DifficultyCalculationUtils.ReverseLerp(osuLastLastObj.LazyJumpDistance, diameter, diameter * 1.5), 1.8);
+                    }
                 }
             }
 
@@ -148,6 +165,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
 
             // Add in acute angle bonus or wide angle bonus + velocity change bonus, whichever is larger.
             aimStrain += Math.Max(acuteAngleBonus * acute_angle_multiplier, wideAngleBonus * wide_angle_multiplier + velocityChangeBonus * velocity_change_multiplier);
+
+            aimStrain -= aimSlopNerf * aim_slop_nerf_multiplier;
 
             // Add in additional slider velocity bonus.
             if (withSliderTravelDistance)

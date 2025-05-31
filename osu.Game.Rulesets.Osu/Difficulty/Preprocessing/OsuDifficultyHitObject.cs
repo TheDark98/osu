@@ -200,18 +200,22 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
                 return;
 
             // We will scale distances by this factor, so we can assume a uniform CircleSize among beatmaps.
-            float scalingFactor = NORMALISED_RADIUS / (float)BaseObject.Radius;
+            double scalingFactor = NORMALISED_RADIUS / BaseObject.Radius;
 
             Vector2 lastCursorPosition = lastDifficultyObject != null ? getEndCursorPosition(lastDifficultyObject) : LastObject.StackedPosition;
 
-            double currdistance = (BaseObject.StackedPosition - lastCursorPosition).Length * scalingFactor;
+            double currdistance = (BaseObject.StackedPosition - lastCursorPosition).Length;
 
-            LazyJumpDistance = currdistance * scalingFactor;//getMissProbability(currdistance / StrainTime, BaseObject.Radius);
+            LazyJumpDistance = currdistance * scalingFactor;
             MinimumJumpTime = StrainTime;
             MinimumJumpDistance = LazyJumpDistance;
 
             if (LastObject is Slider lastSlider && lastDifficultyObject != null)
             {
+                scalingFactor /= SLIDER_RADIUS_MULTIPLIER;
+
+                LazyJumpDistance = currdistance * scalingFactor;
+
                 double lastTravelTime = Math.Max(lastDifficultyObject.LazyTravelTime / clockRate, MIN_DELTA_TIME);
                 MinimumJumpTime = Math.Max(StrainTime - lastTravelTime, MIN_DELTA_TIME);
 
@@ -237,9 +241,9 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
                 // Thus, the player is assumed to jump the minimum of these two distances in all cases.
                 //
 
-                float tailDistance = Vector2.Subtract(lastSlider.TailCircle.StackedPosition, BaseObject.StackedPosition).Length * scalingFactor;
-                double tailJumpDistance = tailDistance * scalingFactor;//getMissProbability(tailDistance / StrainTime, BaseObject.Radius);
-                MinimumJumpDistance = Math.Max(0, Math.Min(LazyJumpDistance - lastSlider.Radius, tailJumpDistance - lastSlider.Radius));
+                double tailDistance = (lastSlider.TailCircle.StackedPosition - BaseObject.StackedPosition).Length * scalingFactor;
+                double tailJumpDistance = tailDistance * scalingFactor;
+                MinimumJumpDistance = Math.Max(0, Math.Min(LazyJumpDistance, tailJumpDistance));
             }
 
             if (lastLastDifficultyObject != null && lastLastDifficultyObject.BaseObject is not Spinner)
@@ -284,7 +288,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
 
                 OsuHitObject lastMovementObj = (OsuHitObject)nestedObjects[i - 1];
 
-                float scalingFactor = NORMALISED_RADIUS / (float)BaseObject.Radius;
+                double scalingFactor = NORMALISED_RADIUS / BaseObject.Radius / SLIDER_RADIUS_MULTIPLIER;
 
                 double currMovement = (currMovementObj.StackedPosition - lastMovementObj.StackedPosition).Length * scalingFactor;
 
@@ -307,27 +311,20 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
                     lastStrainTime = Math.Max(lastMovementObj.StartTime - lastLastMovementObj.StartTime, 1);
                 }
 
-                double lastRadius = lastMovementObj.Radius;
+                if (lastMovementObj is SliderHeadCircle)
+                    lastMovement *= SLIDER_RADIUS_MULTIPLIER;
 
-                if (lastMovementObj is not SliderHeadCircle)
-                    lastRadius *= SLIDER_RADIUS_MULTIPLIER;
+                double minimumMovement = Math.Max(currMovement - scalingFactor, 0);
 
-                if (lastStrainTime > 0)
-                    lastMovement *= scalingFactor;//getMissProbability(lastMovement / lastStrainTime, lastMovementObj.Radius * lastRadius);
+                if (currMovementObj is SliderRepeat)
+                    TravelDistance += minimumMovement;
                 else
-                    lastMovement = 0;
-
-                // We get the miss probability based on the current movement, the start time of the current object, and its radius.
-                double missProbability = 1;//getMissProbability(currMovement / currStrainTime, currMovementObj.Radius * SLIDER_RADIUS_MULTIPLIER);
-
-                double minimumMovement = Math.Max(currMovement - currMovementObj.Radius * SLIDER_RADIUS_MULTIPLIER, 0);
-
-                TravelDistance += currMovement * missProbability;
+                    TravelDistance += currMovement;
 
                 // If the current Object is the last one, we need to remove the leniency to remove the unnecessary distance and time.
                 if (i == nestedObjects.Count - 1)
                 {
-                    double velocity = currMovement * missProbability / currStrainTime;
+                    double velocity = currMovement / currStrainTime;
                     TravelDistance -= velocity * trackingEndLeniency;
 
                     double minimumVelocity = minimumMovement / currStrainTime;
@@ -341,7 +338,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
 
                     if (lastLastCursorPosition is not null)
                     {
-                        Vector2 v1 = lastLastCursorPosition.Value * scalingFactor - lastMovementObj.StackedPosition;
+                        Vector2 v1 = lastLastCursorPosition.Value - lastMovementObj.StackedPosition;
                         Vector2 v2 = currMovementObj.StackedPosition - lastMovementObj.StackedPosition;
                         float dot = Vector2.Dot(v1, v2);
                         float det = v1.X * v2.Y - v1.Y * v2.X;

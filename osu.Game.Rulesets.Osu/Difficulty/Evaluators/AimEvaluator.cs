@@ -45,10 +45,10 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
             // But if the last object is a slider, then we extend the travel velocity through the slider into the current object.
             if (osuLastObj.BaseObject is Slider && withSliderTravelDistance)
             {
-                double travelVelocity = osuLastObj.TravelDistance / osuLastObj.TravelTime; // calculate the slider velocity from slider head to slider end.
+                double travelVelocity = osuLastObj.LazyTravelDistance / osuLastObj.TravelTime; // calculate the slider velocity from slider head to slider end.
                 double movementVelocity = osuCurrObj.MinimumJumpDistance / osuCurrObj.MinimumJumpTime; // calculate the movement velocity from slider end to current object
 
-                currVelocity = Math.Max(currVelocity, movementVelocity + travelVelocity); // take the larger total combined velocity.
+                currVelocity = movementVelocity + travelVelocity; // take the larger total combined velocity.
             }
 
             // As above, do the same for the previous hitobject.
@@ -56,10 +56,10 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
 
             if (osuLastLastObj.BaseObject is Slider && withSliderTravelDistance)
             {
-                double travelVelocity = osuLastLastObj.TravelDistance / osuLastLastObj.TravelTime;
+                double travelVelocity = osuLastLastObj.LazyTravelDistance / osuLastLastObj.TravelTime;
                 double movementVelocity = osuLastObj.MinimumJumpDistance / osuLastObj.MinimumJumpTime;
 
-                prevVelocity = Math.Max(prevVelocity, movementVelocity + travelVelocity);
+                prevVelocity = movementVelocity + travelVelocity;
             }
 
             double wideAngleBonus = 0;
@@ -76,6 +76,9 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
                 {
                     double currAngle = osuCurrObj.Angle.Value;
                     double lastAngle = osuLastObj.Angle.Value;
+
+                    if (osuLastObj.BaseObject is Slider && osuLastObj.SliderAngle != null)
+                        lastAngle = osuLastObj.SliderAngle.Value;
 
                     // Rewarding angles, take the smaller velocity as base.
                     double angleBonus = Math.Min(currVelocity, prevVelocity);

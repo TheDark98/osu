@@ -8,6 +8,7 @@ using osu.Game.Rulesets.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Osu.Mods;
 using osu.Game.Rulesets.Osu.Objects;
+using osu.Game.Rulesets.Osu.UI;
 using osu.Game.Rulesets.Scoring;
 using osuTK;
 
@@ -110,6 +111,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
         /// </summary>
         public double SmallCircleBonus { get; private set; }
 
+        public Vector2 CursorMovement { get; private set; }
+
         private readonly OsuDifficultyHitObject? lastLastDifficultyObject;
         private readonly OsuDifficultyHitObject? lastDifficultyObject;
 
@@ -201,6 +204,11 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
             float scalingFactor = NORMALISED_RADIUS / (float)BaseObject.Radius;
 
             Vector2 lastCursorPosition = lastDifficultyObject != null ? getEndCursorPosition(lastDifficultyObject) : LastObject.StackedPosition;
+
+            float orizzontalMovement = Math.Abs(BaseObject.StackedPosition.X - lastCursorPosition.X) / OsuPlayfield.BASE_SIZE.X;
+            float verticalMovement = Math.Abs(BaseObject.StackedPosition.Y - lastCursorPosition.Y) / OsuPlayfield.BASE_SIZE.Y;
+
+            CursorMovement = new Vector2(orizzontalMovement, verticalMovement);
 
             LazyJumpDistance = (BaseObject.StackedPosition * scalingFactor - lastCursorPosition * scalingFactor).Length;
             MinimumJumpTime = AdjustedDeltaTime;

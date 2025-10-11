@@ -16,6 +16,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
         private const double slider_multiplier = 1.35;
         private const double velocity_change_multiplier = 0.75;
         private const double wiggle_multiplier = 1.02;
+        private const double agility_multiplier = 0.3;
 
         /// <summary>
         /// Evaluates the difficulty of aiming the current object, based on:
@@ -67,6 +68,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
             double sliderBonus = 0;
             double velocityChangeBonus = 0;
             double wiggleBonus = 0;
+            double agility = 0;
 
             double aimStrain = currVelocity; // Start strain with regular velocity.
 
@@ -109,6 +111,12 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
                               * Math.Pow(DifficultyCalculationUtils.ReverseLerp(osuLastObj.LazyJumpDistance, diameter * 3, diameter), 1.8)
                               * DifficultyCalculationUtils.Smootherstep(lastAngle, double.DegreesToRadians(110), double.DegreesToRadians(60));
 
+                double minXMovement = Math.Min(osuCurrObj.CursorMovement.X, osuLastObj.CursorMovement.X);
+                double minYMovement = Math.Min(osuCurrObj.CursorMovement.Y, osuLastObj.CursorMovement.Y);
+
+                if (!(minXMovement == 0 || minYMovement == 0))
+                    agility = Math.Min(minXMovement / minYMovement, minYMovement / minXMovement);
+
                 if (osuLast2Obj != null)
                 {
                     // If objects just go back and forth through a middle point - don't give as much wide bonus
@@ -148,25 +156,29 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
                 // Reward sliders based on velocity.
                 sliderBonus = osuLastObj.TravelDistance / osuLastObj.TravelTime;
             }
-
-            aimStrain += wiggleBonus * wiggle_multiplier;
-            aimStrain += velocityChangeBonus * velocity_change_multiplier;
+            double totalBonus = 0;
+            totalBonus += wiggleBonus * wiggle_multiplier;
+            totalBonus += velocityChangeBonus * velocity_change_multiplier;
 
             // Add in acute angle bonus or wide angle bonus, whichever is larger.
-            aimStrain += Math.Max(acuteAngleBonus * acute_angle_multiplier, wideAngleBonus * wide_angle_multiplier);
+            totalBonus += Math.Max(acuteAngleBonus * acute_angle_multiplier, wideAngleBonus * wide_angle_multiplier);
 
             // Apply high circle size bonus
-            aimStrain *= osuCurrObj.SmallCircleBonus;
+            totalBonus *= osuCurrObj.SmallCircleBonus;
 
             // Add in additional slider velocity bonus.
             if (withSliderTravelDistance)
                 aimStrain += sliderBonus * slider_multiplier;
 
+            totalBonus *= 1 + agility * agility_multiplier;
+
+            aimStrain += totalBonus;
+
             return aimStrain;
         }
 
-        private static double calcWideAngleBonus(double angle) => DifficultyCalculationUtils.Smoothstep(angle, double.DegreesToRadians(40), double.DegreesToRadians(140));
+        private static double calcWideAngleBonus(double angle) => DifficultyCalculationUtils.Smoothstep(angle, double.DegreesToRadians(60), double.DegreesToRadians(140));
 
-        private static double calcAcuteAngleBonus(double angle) => DifficultyCalculationUtils.Smoothstep(angle, double.DegreesToRadians(140), double.DegreesToRadians(40));
+        private static double calcAcuteAngleBonus(double angle) => DifficultyCalculationUtils.Smoothstep(angle, double.DegreesToRadians(120), double.DegreesToRadians(40));
     }
 }

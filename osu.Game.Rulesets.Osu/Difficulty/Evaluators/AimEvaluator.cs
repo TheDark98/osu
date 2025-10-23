@@ -150,7 +150,10 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
             }
 
             aimStrain += wiggleBonus * wiggle_multiplier;
-            aimStrain += velocityChangeBonus * velocity_change_multiplier;
+            aimStrain += velocityChangeBonus * velocity_change_multiplier * osuCurrObj.AgilityBonus;
+
+            // Ideally we would multiply also the angle bonuses by the agility bonus
+            // but it isnt implemented because how poorly anglebonus is implemented.
 
             // Add in acute angle bonus or wide angle bonus, whichever is larger.
             aimStrain += Math.Max(acuteAngleBonus * acute_angle_multiplier, wideAngleBonus * wide_angle_multiplier);

@@ -110,6 +110,11 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
         /// </summary>
         public double SmallCircleBonus { get; private set; }
 
+        /// <summary>
+        /// Bonus for maps with high agility requirements.
+        /// </summary>
+        public double AgilityBonus { get; private set; }
+
         private readonly OsuDifficultyHitObject? lastLastDifficultyObject;
         private readonly OsuDifficultyHitObject? lastDifficultyObject;
 
@@ -135,6 +140,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
 
             computeSliderCursorPosition();
             setDistances(clockRate);
+            calcAgilityBonus();
         }
 
         public double OpacityAt(double time, bool hidden)
@@ -182,6 +188,30 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
             }
 
             return 0;
+        }
+
+        private void calcAgilityBonus()
+        {
+            AgilityBonus = 1;
+
+            if (BaseObject is Spinner || LastObject is Spinner)
+                return;
+            if (lastLastDifficultyObject == null || lastLastDifficultyObject.BaseObject is Spinner)
+                return;
+
+            Vector2 lastCursorPosition = lastDifficultyObject != null ? getEndCursorPosition(lastDifficultyObject) : LastObject.StackedPosition;
+            Vector2 lastLastCursorPosition = getEndCursorPosition(lastLastDifficultyObject);
+
+            Vector2 movementCurrToLast = BaseObject.StackedPosition - lastCursorPosition;
+            Vector2 movementCurrToLastLast = BaseObject.StackedPosition - lastLastCursorPosition;
+
+            double movementX = Math.Abs(movementCurrToLast.X - movementCurrToLastLast.X);
+            double movementY = Math.Abs(movementCurrToLast.Y - movementCurrToLastLast.Y);
+
+            double maxMovement = 1 + Math.Max(movementX, movementY);
+            double minMovement = 1 + Math.Min(movementX, movementY);
+
+            AgilityBonus = 1 + (minMovement / maxMovement);
         }
 
         private void setDistances(double clockRate)

@@ -167,18 +167,18 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
         }
 
         /// <summary>
-        /// Returns how possible is it to doubletap this object together with the next one and get perfect judgement in range from 0 to 1
+        /// Returns how possible is it to doubletap this object together with the previous one and get perfect judgement in range from 0 to 1
         /// </summary>
-        public double GetDoubletapness(OsuDifficultyHitObject? osuNextObj)
+        public double GetDoubletapness(OsuDifficultyHitObject? osuPrevtObj)
         {
-            if (osuNextObj != null)
+            if (osuPrevtObj != null)
             {
-                double currDeltaTime = Math.Max(1, DeltaTime);
-                double nextDeltaTime = Math.Max(1, osuNextObj.DeltaTime);
-                double deltaDifference = Math.Abs(nextDeltaTime - currDeltaTime);
-                double speedRatio = currDeltaTime / Math.Max(currDeltaTime, deltaDifference);
-                double windowRatio = Math.Pow(Math.Min(1, currDeltaTime / HitWindowGreat), 2);
-                return 1.0 - Math.Pow(speedRatio, 1 - windowRatio);
+                double prevDeltaTime = Math.Max(1, osuPrevtObj.DeltaTime);
+                double deltaTime = Math.Max(1, DeltaTime);
+                double relevantHitWindow = Math.Max(1, HitWindowGreat / 2);
+                double prevRelevantHitWindow = Math.Max(1, osuPrevtObj.HitWindowGreat / 2);
+                double avarageHitWindow = (relevantHitWindow + prevRelevantHitWindow) / 2;
+                return Math.Clamp(avarageHitWindow / deltaTime, 0, 1);
             }
 
             return 0;

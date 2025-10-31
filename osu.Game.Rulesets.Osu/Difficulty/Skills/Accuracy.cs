@@ -8,7 +8,6 @@ using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Difficulty.Evaluators;
 using osu.Game.Rulesets.Osu.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Osu.Objects;
-using System.Linq;
 using osu.Game.Rulesets.Osu.Difficulty.Utils;
 
 namespace osu.Game.Rulesets.Osu.Difficulty.Skills
@@ -16,9 +15,9 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
     /// <summary>
     /// Represents the skill required to press keys with regards to keeping up with the speed at which objects need to be hit.
     /// </summary>
-    public class Speed : OsuStrainSkill
+    public class Accuracy : OsuStrainSkill
     {
-        private double skillMultiplier => 1.47;
+        private double skillMultiplier => 1.00;
         private double strainDecayBase => 0.3;
 
         private double currentStrain;
@@ -27,7 +26,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
 
         protected override int ReducedSectionCount => 5;
 
-        public Speed(Mod[] mods)
+        public Accuracy(Mod[] mods)
             : base(mods)
         {
         }
@@ -39,24 +38,12 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
         protected override double StrainValueAt(DifficultyHitObject current)
         {
             currentStrain *= strainDecay(((OsuDifficultyHitObject)current).AdjustedDeltaTime);
-            currentStrain += SpeedEvaluator.EvaluateDifficultyOf(current, Mods) * skillMultiplier;
+            currentStrain += RhythmEvaluator.EvaluateDifficultyOf(current) * skillMultiplier;
 
             if (current.BaseObject is Slider)
                 sliderStrains.Add(currentStrain);
 
             return currentStrain;
-        }
-
-        public double RelevantNoteCount()
-        {
-            if (ObjectStrains.Count == 0)
-                return 0;
-
-            double maxStrain = ObjectStrains.Max();
-            if (maxStrain == 0)
-                return 0;
-
-            return ObjectStrains.Sum(strain => 1.0 / (1.0 + Math.Exp(-(strain / maxStrain * 12.0 - 6.0))));
         }
 
         public double CountTopWeightedSliders() => OsuStrainUtils.CountTopWeightedSliders(sliderStrains, DifficultyValue());

@@ -158,6 +158,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty
             return flashlightRating * Math.Sqrt(ratingMultiplier);
         }
 
+
         private double calculateAimVisibilityFactor(double approachRate)
         {
             const double ar_factor_end_point = 11.5;

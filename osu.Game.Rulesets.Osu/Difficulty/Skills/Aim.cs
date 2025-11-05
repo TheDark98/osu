@@ -39,7 +39,11 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Skills
         protected override double StrainValueAt(DifficultyHitObject current)
         {
             currentStrain *= strainDecay(current.DeltaTime);
-            currentStrain += AimEvaluator.EvaluateDifficultyOf(current, IncludeSliders) * skillMultiplier;
+
+            double circleStrain = AimEvaluator.EvaluateDifficultyOf(current);
+            double sliderStrain = IncludeSliders ? SliderEvaluator.EvaluateDifficultyOf(current) : 0;
+
+            currentStrain += (circleStrain + sliderStrain) * skillMultiplier;
 
             if (current.BaseObject is Slider)
                 sliderStrains.Add(currentStrain);

@@ -133,7 +133,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
                 HitWindowGreat = 2 * BaseObject.HitWindows.WindowFor(HitResult.Great) / clockRate;
             }
 
-            computeSliderCursorPosition();
+            computeSliderCursorPosition(clockRate);
             setDistances(clockRate);
         }
 
@@ -186,13 +186,6 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
 
         private void setDistances(double clockRate)
         {
-            if (BaseObject is Slider currentSlider)
-            {
-                // Bonus for repeat sliders until a better per nested object strain system can be achieved.
-                TravelDistance = LazyTravelDistance * Math.Pow(1 + currentSlider.RepeatCount / 2.5, 1.0 / 2.5);
-                TravelTime = Math.Max(LazyTravelTime / clockRate, MIN_DELTA_TIME);
-            }
-
             // We don't need to calculate either angle or distance when one of the last->curr objects is a spinner
             if (BaseObject is Spinner || LastObject is Spinner)
                 return;
@@ -251,7 +244,7 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
             }
         }
 
-        private void computeSliderCursorPosition()
+        private void computeSliderCursorPosition(double clockRate)
         {
             if (BaseObject is not Slider slider)
                 return;
@@ -259,49 +252,15 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
             if (LazyEndPosition != null)
                 return;
 
-            // TODO: This commented version is actually correct by the new lazer implementation, but intentionally held back from
-            // difficulty calculator to preserve known behaviour.
-            // double trackingEndTime = Math.Max(
-            //     // SliderTailCircle always occurs at the final end time of the slider, but the player only needs to hold until within a lenience before it.
-            //     slider.Duration + SliderEventGenerator.TAIL_LENIENCY,
-            //     // There's an edge case where one or more ticks/repeats fall within that leniency range.
-            //     // In such a case, the player needs to track until the final tick or repeat.
-            //     slider.NestedHitObjects.LastOrDefault(n => n is not SliderTailCircle)?.StartTime ?? double.MinValue
-            // );
-
             double trackingEndTime = Math.Max(
-                slider.StartTime + slider.Duration + SliderEventGenerator.TAIL_LENIENCY,
-                slider.StartTime + slider.Duration / 2
+            // SliderTailCircle always occurs at the final end time of the slider, but the player only needs to hold until within a lenience before it.
+            slider.Duration + SliderEventGenerator.TAIL_LENIENCY,
+            // There's an edge case where one or more ticks/repeats fall within that leniency range.
+            // In such a case, the player needs to track until the final tick or repeat.
+            slider.NestedHitObjects.LastOrDefault(n => n is not SliderTailCircle)?.StartTime ?? double.MinValue
             );
 
             IList<HitObject> nestedObjects = slider.NestedHitObjects;
-
-            SliderTick? lastRealTick = null;
-
-            foreach (var hitobject in slider.NestedHitObjects)
-            {
-                if (hitobject is SliderTick tick)
-                    lastRealTick = tick;
-            }
-
-            if (lastRealTick?.StartTime > trackingEndTime)
-            {
-                trackingEndTime = lastRealTick.StartTime;
-
-                // When the last tick falls after the tracking end time, we need to re-sort the nested objects
-                // based on time. This creates a somewhat weird ordering which is counter to how a user would
-                // understand the slider, but allows a zero-diff with known diffcalc output.
-                //
-                // To reiterate, this is definitely not correct from a difficulty calculation perspective
-                // and should be revisited at a later date (likely by replacing this whole code with the commented
-                // version above).
-                List<HitObject> reordered = nestedObjects.ToList();
-
-                reordered.Remove(lastRealTick);
-                reordered.Add(lastRealTick);
-
-                nestedObjects = reordered;
-            }
 
             LazyTravelTime = trackingEndTime - slider.StartTime;
 
@@ -340,11 +299,6 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
 
                     currMovementLength = scalingFactor * currMovement.Length;
                 }
-                else if (currMovementObj is SliderRepeat)
-                {
-                    // For a slider repeat, assume a tighter movement threshold to better assess repeat sliders.
-                    requiredMovement = NORMALISED_RADIUS;
-                }
 
                 if (currMovementLength > requiredMovement)
                 {
@@ -357,6 +311,9 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Preprocessing
                 if (i == nestedObjects.Count - 1)
                     LazyEndPosition = currCursorPosition;
             }
+
+            TravelDistance = LazyTravelDistance;
+            TravelTime = Math.Max(LazyTravelTime / clockRate, MIN_DELTA_TIME);
         }
 
         private Vector2 getEndCursorPosition(OsuDifficultyHitObject difficultyHitObject)

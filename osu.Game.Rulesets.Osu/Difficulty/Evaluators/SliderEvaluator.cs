@@ -1,7 +1,6 @@
 ﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
-using System;
 using osu.Game.Rulesets.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Difficulty.Utils;
 using osu.Game.Rulesets.Osu.Difficulty.Preprocessing;
@@ -13,9 +12,8 @@ namespace osu.Game.Rulesets.Osu.Difficulty.Evaluators
     {
         private const double wide_angle_multiplier = 1.5;
         private const double acute_angle_multiplier = 2.55;
-        private const double slider_multiplier = 1.35;
+        private const double slider_multiplier = 2.35;
         private const double velocity_change_multiplier = 0.75;
-        private const double wiggle_multiplier = 1.02;
 
         /// <summary>
         /// Evaluates the difficulty of aiming the current object, based on:

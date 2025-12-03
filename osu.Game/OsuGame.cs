@@ -212,6 +212,8 @@ namespace osu.Game
         private Bindable<float> uiScale;
 
         private Bindable<string> configSkin;
+        private Bindable<string> configSoundSkin;
+        private Bindable<bool> configUseDefaultSkinSound;
 
         private readonly string[] args;
 

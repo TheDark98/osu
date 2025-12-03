@@ -40,6 +40,8 @@ namespace osu.Game.Configuration
             // UI/selection defaults
             SetDefault(OsuSetting.Ruleset, string.Empty);
             SetDefault(OsuSetting.Skin, SkinInfo.ARGON_SKIN.ToString());
+            SetDefault(OsuSetting.UseDefaultSkinSound, true);
+            SetDefault(OsuSetting.SoundSkin, SkinInfo.ARGON_SKIN.ToString());
 
             SetDefault(OsuSetting.BeatmapDetailTab, PlayBeatmapDetailArea.TabType.Local);
             SetDefault(OsuSetting.BeatmapDetailModsFilter, false);
@@ -398,6 +400,8 @@ namespace osu.Game.Configuration
         ShowFirstRunSetup,
         ShowConvertedBeatmaps,
         Skin,
+        SoundSkin,
+        UseDefaultSkinSound,
         ScreenshotFormat,
         ScreenshotCaptureMenuCursor,
         SongSelectRightMouseScroll,

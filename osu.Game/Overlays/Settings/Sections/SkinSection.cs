@@ -34,6 +34,8 @@ namespace osu.Game.Overlays.Settings.Sections
     {
         private SkinSettingsDropdown skinDropdown;
 
+        private SkinSettingsDropdown soundSkinDropdown;
+
         public override LocalisableString Header => SkinSettingsStrings.SkinSectionHeader;
 
         public override Drawable CreateIcon() => new SpriteIcon
@@ -51,6 +53,9 @@ namespace osu.Game.Overlays.Settings.Sections
 
         [Resolved]
         private SkinManager skins { get; set; }
+
+        [Resolved]
+        private SkinManager soundSkins { get; set; }
 
         [Resolved]
         private RealmAccess realm { get; set; }
@@ -90,6 +95,18 @@ namespace osu.Game.Overlays.Settings.Sections
                     Text = SkinSettingsStrings.SkinLayoutEditor,
                     Action = () => skinEditor?.ToggleVisibility(),
                 },
+                new SettingsCheckbox
+                {
+                    LabelText = SkinSectionStrings.UseCustomSkinSounds,
+                },
+                soundSkinDropdown = new SkinSettingsDropdown
+                {
+                    AlwaysShowSearchBar = true,
+                    AllowNonContiguousMatching = true,
+                    LabelText = SkinSectionStrings.SoundSkin,
+                    Current = soundSkins.CurrentSkinInfo,
+                    Keywords = new[] { @"skins" },
+                },
             };
         }
 
@@ -110,6 +127,18 @@ namespace osu.Game.Overlays.Settings.Sections
                     // cause SelectRandomSkin to be unable to skip the previous selection.
                     skins.CurrentSkinInfo.Value = skin.OldValue;
                     skins.SelectRandomSkin();
+                }
+            });
+
+            soundSkinDropdown.Current.BindValueChanged(soundSkin =>
+            {
+                if (soundSkin.NewValue == random_skin_info)
+                {
+                    // before selecting random, set the skin back to the previous selection.
+                    // this is done because at this point it will be random_skin_info, and would
+                    // cause SelectRandomSkin to be unable to skip the previous selection.
+                    soundSkins.CurrentSkinInfo.Value = soundSkin.OldValue;
+                    soundSkins.SelectRandomSkin();
                 }
             });
         }
@@ -136,6 +165,7 @@ namespace osu.Game.Overlays.Settings.Sections
                 dropdownItems.Add(skin.ToLive(realm));
 
             Schedule(() => skinDropdown.Items = dropdownItems);
+            Schedule(() => soundSkinDropdown.Items = dropdownItems);
         }
 
         protected override void Dispose(bool isDisposing)

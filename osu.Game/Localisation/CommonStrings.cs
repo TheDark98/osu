@@ -179,6 +179,11 @@ namespace osu.Game.Localisation
         /// </summary>
         public static LocalisableString CopyLink => new TranslatableString(getKey(@"copy_link"), @"Copy link");
 
+        /// <summary>
+        /// "Use Custom Skin Sounds"
+        /// </summary>
+        public static LocalisableString UseCustomSkinSounds => new TranslatableString(getKey(@"use_custom_skin_sounds"), @"Use Custom Skin Sounds");
+
         private static string getKey(string key) => $@"{prefix}:{key}";
     }
 }
